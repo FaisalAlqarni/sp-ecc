@@ -513,6 +513,246 @@ async function runTests() {
     assert.strictEqual(result.stdout.trim(), '', 'Should not modify non-commit commands');
   })) passed++; else failed++;
 
+  // block-dev-server.js tests
+  console.log('\nblock-dev-server.js:');
+
+  if (await asyncTest('exits 0 for non-Bash tools', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Edit',
+      tool_input: { file_path: 'test.js' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-dev-server.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for non-Bash tools, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('exits 0 for non-dev-server commands', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'npm run build' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-dev-server.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for non-dev-server commands, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('exits 0 for git commands', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git status' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-dev-server.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for git commands, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('exits 0 when TMUX is set (already in tmux)', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'npm run dev' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-dev-server.js'), input, { TMUX: '/tmp/tmux-test' });
+    assert.strictEqual(result.code, 0, `Should exit 0 when in tmux, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('blocks npm run dev outside tmux (non-Windows)', async () => {
+    if (process.platform === 'win32') {
+      // On Windows it always exits 0
+      return;
+    }
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'npm run dev' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-dev-server.js'), input, { TMUX: '' });
+    assert.strictEqual(result.code, 1, `Should exit 1 for dev server outside tmux, got ${result.code}`);
+    assert.ok(result.stderr.includes('BLOCKED'), 'Should contain BLOCKED message');
+  })) passed++; else failed++;
+
+  if (await asyncTest('blocks pnpm dev outside tmux (non-Windows)', async () => {
+    if (process.platform === 'win32') {
+      return;
+    }
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'pnpm dev' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-dev-server.js'), input, { TMUX: '' });
+    assert.strictEqual(result.code, 1, `Should exit 1 for pnpm dev outside tmux, got ${result.code}`);
+    assert.ok(result.stderr.includes('BLOCKED'), 'Should contain BLOCKED message');
+  })) passed++; else failed++;
+
+  if (await asyncTest('blocks yarn dev outside tmux (non-Windows)', async () => {
+    if (process.platform === 'win32') {
+      return;
+    }
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'yarn dev' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-dev-server.js'), input, { TMUX: '' });
+    assert.strictEqual(result.code, 1, `Should exit 1 for yarn dev outside tmux, got ${result.code}`);
+    assert.ok(result.stderr.includes('BLOCKED'), 'Should contain BLOCKED message');
+  })) passed++; else failed++;
+
+  if (await asyncTest('blocks bun run dev outside tmux (non-Windows)', async () => {
+    if (process.platform === 'win32') {
+      return;
+    }
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'bun run dev' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-dev-server.js'), input, { TMUX: '' });
+    assert.strictEqual(result.code, 1, `Should exit 1 for bun run dev outside tmux, got ${result.code}`);
+    assert.ok(result.stderr.includes('BLOCKED'), 'Should contain BLOCKED message');
+  })) passed++; else failed++;
+
+  // tmux-reminder.js tests
+  console.log('\ntmux-reminder.js:');
+
+  if (await asyncTest('exits 0 for non-Bash tools', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Edit',
+      tool_input: { file_path: 'test.js' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'tmux-reminder.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for non-Bash tools, got ${result.code}`);
+    assert.strictEqual(result.stderr.trim(), '', 'Should not print any reminder for non-Bash tools');
+  })) passed++; else failed++;
+
+  if (await asyncTest('exits 0 silently for non-matching commands', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'echo hello' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'tmux-reminder.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for non-matching commands, got ${result.code}`);
+    assert.strictEqual(result.stderr.trim(), '', 'Should not print reminder for non-matching commands');
+  })) passed++; else failed++;
+
+  if (await asyncTest('exits 0 silently when TMUX is set', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'npm install' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'tmux-reminder.js'), input, { TMUX: '/tmp/tmux-test' });
+    assert.strictEqual(result.code, 0, `Should exit 0 when in tmux, got ${result.code}`);
+    assert.strictEqual(result.stderr.trim(), '', 'Should not print reminder when already in tmux');
+  })) passed++; else failed++;
+
+  if (await asyncTest('prints reminder for npm install outside tmux (non-Windows)', async () => {
+    if (process.platform === 'win32') {
+      return;
+    }
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'npm install express' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'tmux-reminder.js'), input, { TMUX: '' });
+    assert.strictEqual(result.code, 0, `Should always exit 0, got ${result.code}`);
+    assert.ok(result.stderr.includes('tmux'), 'Should print tmux reminder');
+  })) passed++; else failed++;
+
+  if (await asyncTest('prints reminder for pytest outside tmux (non-Windows)', async () => {
+    if (process.platform === 'win32') {
+      return;
+    }
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'pytest tests/' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'tmux-reminder.js'), input, { TMUX: '' });
+    assert.strictEqual(result.code, 0, `Should always exit 0, got ${result.code}`);
+    assert.ok(result.stderr.includes('tmux'), 'Should print tmux reminder for pytest');
+  })) passed++; else failed++;
+
+  if (await asyncTest('prints reminder for docker outside tmux (non-Windows)', async () => {
+    if (process.platform === 'win32') {
+      return;
+    }
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'docker build .' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'tmux-reminder.js'), input, { TMUX: '' });
+    assert.strictEqual(result.code, 0, `Should always exit 0, got ${result.code}`);
+    assert.ok(result.stderr.includes('tmux'), 'Should print tmux reminder for docker');
+  })) passed++; else failed++;
+
+  // typescript-check.js tests
+  console.log('\ntypescript-check.js:');
+
+  if (await asyncTest('exits 0 for missing file_path', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Edit',
+      tool_input: {}
+    });
+    const result = await runScript(path.join(scriptsDir, 'typescript-check.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for missing file_path, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('exits 0 for non-existent file', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Edit',
+      tool_input: { file_path: '/tmp/does-not-exist-typescript-check-test.ts' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'typescript-check.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for non-existent file, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('exits 0 when no tsconfig.json found', async () => {
+    const testDir = createTestDir();
+    const testFile = path.join(testDir, 'test.ts');
+    fs.writeFileSync(testFile, 'const x: number = 1;');
+
+    const input = JSON.stringify({
+      tool_name: 'Edit',
+      tool_input: { file_path: testFile }
+    });
+    const result = await runScript(path.join(scriptsDir, 'typescript-check.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 when no tsconfig.json found, got ${result.code}`);
+
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (await asyncTest('always exits 0 (non-blocking)', async () => {
+    // Even with a valid TS file and tsconfig, should exit 0
+    const testDir = createTestDir();
+    const testFile = path.join(testDir, 'test.ts');
+    fs.writeFileSync(testFile, 'const x: string = 123;'); // type error on purpose
+    fs.writeFileSync(path.join(testDir, 'tsconfig.json'), '{"compilerOptions":{"strict":true}}');
+
+    const input = JSON.stringify({
+      tool_name: 'Edit',
+      tool_input: { file_path: testFile }
+    });
+    const result = await runScript(path.join(scriptsDir, 'typescript-check.js'), input);
+    assert.strictEqual(result.code, 0, `Should always exit 0, got ${result.code}`);
+
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  // check-console-log.js tests
+  console.log('\ncheck-console-log.js:');
+
+  if (await asyncTest('runs without error and exits 0', async () => {
+    const result = await runScript(path.join(scriptsDir, 'check-console-log.js'));
+    assert.strictEqual(result.code, 0, `Should exit 0, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('exits 0 when not in a git repo', async () => {
+    const testDir = createTestDir();
+    const result = await runScript(path.join(scriptsDir, 'check-console-log.js'), '', {
+      GIT_DIR: path.join(testDir, 'nonexistent-git')
+    });
+    assert.strictEqual(result.code, 0, `Should exit 0 outside git repo, got ${result.code}`);
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (await asyncTest('always exits 0 (non-blocking)', async () => {
+    // Run with empty stdin to verify it handles gracefully
+    const result = await runScript(path.join(scriptsDir, 'check-console-log.js'), '');
+    assert.strictEqual(result.code, 0, `Should always exit 0, got ${result.code}`);
+  })) passed++; else failed++;
+
   // plugin.json validation
   console.log('\nplugin.json Validation:');
 
