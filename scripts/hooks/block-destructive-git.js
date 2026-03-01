@@ -11,17 +11,19 @@
 // Destructive operations to block (regex patterns)
 const BLOCKED_OPERATIONS = [
   /\bgit\s+push\s+.*--force\b/,
+  /\bgit\s+push\s+.*--force-with-lease\b/,
   /\bgit\s+push\s+-f\b/,
   /\bgit\s+reset\s+--hard\b/,
   /\bgit\s+clean\s+-f\b/,
   /\bgit\s+branch\s+-D\b/,
   /\bgit\s+checkout\s+--\s+\.\s*/,
-  /\bgit\s+rebase\b/,
+  /\bgit\s+rebase\b(?!.*--abort)/,
 ];
 
 // Human-readable descriptions for blocked operations
 const BLOCKED_DESCRIPTIONS = {
   'push.*--force': 'Force push (rewrites remote history)',
+  'push.*--force-with-lease': 'Force push with lease (rewrites remote history)',
   'push.*-f': 'Force push (rewrites remote history)',
   'reset.*--hard': 'Hard reset (discards uncommitted changes)',
   'clean.*-f': 'Force clean (permanently deletes untracked files)',
@@ -46,6 +48,11 @@ process.stdin.on('end', () => {
     }
 
     const command = toolUse.tool_input?.command || '';
+
+    // Allow safe rebase operations
+    if (/\bgit\s+pull\s+--rebase\b/.test(command) || /\bgit\s+rebase\s+--abort\b/.test(command)) {
+      process.exit(0);
+    }
 
     // Check for blocked operations
     for (const pattern of BLOCKED_OPERATIONS) {

@@ -15,6 +15,10 @@ Located in `~/.claude/agents/`:
 | e2e-runner | E2E testing | Critical user flows |
 | refactor-cleaner | Dead code cleanup | Code maintenance |
 | doc-updater | Documentation | Updating docs |
+| database-reviewer | Database review | Schema/query changes |
+| go-build-resolver | Go build fixes | Go build failures |
+| go-reviewer | Go code review | Go code changes |
+| python-reviewer | Python code review | Python code changes |
 
 ## Immediate Agent Usage
 

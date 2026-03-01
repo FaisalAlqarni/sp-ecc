@@ -2,15 +2,7 @@
 
 ## Immutability (CRITICAL)
 
-ALWAYS create new objects, NEVER mutate existing ones:
-
-```
-// Pseudocode
-WRONG:  modify(original, field, value) → changes original in-place
-CORRECT: update(original, field, value) → returns new copy with change
-```
-
-Rationale: Immutable data prevents hidden side effects, makes debugging easier, and enables safe concurrency.
+ALWAYS create new objects, NEVER mutate existing ones. Immutable data prevents hidden side effects, makes debugging easier, and enables safe concurrency.
 
 ## File Organization
 

@@ -2,11 +2,11 @@
 
 ## Structure
 
-Rules are organized into a **common** layer plus **language-specific** directories:
+Rules contain **behavioral principles** that are always active — ensuring standards are never skipped regardless of which skills are invoked.
 
 ```
 rules/
-├── common/          # Language-agnostic principles (always install)
+├── common/          # Language-agnostic behavioral principles
 │   ├── coding-style.md
 │   ├── git-workflow.md
 │   ├── testing.md
@@ -18,62 +18,18 @@ rules/
 │   ├── workflow-orchestration.md
 │   ├── clarify-first.md
 │   └── model-routing.md
-├── typescript/      # TypeScript/JavaScript specific
-├── python/          # Python specific
-├── golang/          # Go specific
-├── ruby/            # Ruby specific
-├── rails/           # Ruby on Rails specific
-├── dart/            # Dart specific
-├── flutter/         # Flutter specific
-├── django/          # Django specific
-├── java/            # Java specific
-└── springboot/      # Spring Boot specific
+└── README.md
 ```
-
-- **common/** contains universal principles — no language-specific code examples.
-- **Language directories** extend the common rules with framework-specific patterns, tools, and code examples. Each file references its common counterpart.
 
 ## Installation
 
 ```bash
-# Install common rules (required for all projects)
 cp -r rules/common/* ~/.claude/rules/
-
-# Install language-specific rules based on your project's tech stack
-cp -r rules/typescript/* ~/.claude/rules/
-cp -r rules/python/* ~/.claude/rules/
-cp -r rules/golang/* ~/.claude/rules/
-cp -r rules/ruby/* ~/.claude/rules/
-cp -r rules/rails/* ~/.claude/rules/
-cp -r rules/dart/* ~/.claude/rules/
-cp -r rules/flutter/* ~/.claude/rules/
-cp -r rules/django/* ~/.claude/rules/
-cp -r rules/java/* ~/.claude/rules/
-cp -r rules/springboot/* ~/.claude/rules/
-
-# Configure according to your actual project requirements
 ```
 
 ## Rules vs Skills
 
-- **Rules** define standards, conventions, and checklists that apply broadly (e.g., "80% test coverage", "no hardcoded secrets").
-- **Skills** (`skills/` directory) provide deep, actionable reference material for specific tasks (e.g., `python-patterns`, `golang-testing`).
+- **Rules** = always active, concise behavioral principles (the "what")
+- **Skills** = invoked when needed, detailed procedural frameworks (the "how")
 
-Language-specific rule files reference relevant skills where appropriate. Rules tell you *what* to do; skills tell you *how* to do it.
-
-## Adding a New Language
-
-There are currently 10 language directories (typescript, python, golang, ruby, rails, dart, flutter, django, java, springboot) that serve as examples. To add support for another language (e.g., `rust/`):
-
-1. Create a `rules/rust/` directory
-2. Add files that extend the common rules:
-   - `coding-style.md` — formatting tools, idioms, error handling patterns
-   - `testing.md` — test framework, coverage tools, test organization
-   - `patterns.md` — language-specific design patterns
-   - `hooks.md` — PostToolUse hooks for formatters, linters, type checkers
-   - `security.md` — secret management, security scanning tools
-3. Each file should start with:
-   ```
-   > This file extends [common/xxx.md](../common/xxx.md) with <Language> specific content.
-   ```
-4. Reference existing skills if available, or create new ones under `skills/`.
+Language-specific guidance lives in skills (e.g., `ruby-patterns`, `rails-tdd`, `django-patterns`), loaded on demand when working with that language. This keeps the always-on token cost minimal while still providing deep guidance when needed.

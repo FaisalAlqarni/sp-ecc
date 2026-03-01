@@ -19,11 +19,7 @@ MANDATORY workflow:
 
 ## Troubleshooting Test Failures
 
-1. Use **tdd-guide** agent
-2. Check test isolation
-3. Verify mocks are correct
-4. Fix implementation, not tests (unless tests are wrong)
-
-## Agent Support
-
-- **tdd-guide** - Use PROACTIVELY for new features, enforces write-tests-first
+1. Check test isolation
+2. Verify mocks are correct
+3. Fix implementation, not tests (unless tests are wrong)
+4. Use tdd-guide agent for guidance (see `agents.md`)

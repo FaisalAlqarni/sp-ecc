@@ -285,7 +285,7 @@ async function runTests() {
     assert.ok(hooks.hooks.PreCompact, 'Should have PreCompact hooks');
   })) passed++; else failed++;
 
-  if (test('all hook commands use run-node.sh, session-start.sh, or observe.sh', () => {
+  if (test('all hook commands use run-node.sh or session-start.sh', () => {
     const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
     const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
 
@@ -294,8 +294,8 @@ async function runTests() {
         for (const hook of entry.hooks) {
           if (hook.type === 'command') {
             assert.ok(
-              hook.command.includes('run-node.sh') || hook.command.includes('session-start.sh') || hook.command.includes('observe.sh'),
-              `Hook command should use run-node.sh, session-start.sh, or observe.sh: ${hook.command.substring(0, 80)}...`
+              hook.command.includes('run-node.sh') || hook.command.includes('session-start.sh'),
+              `Hook command should use run-node.sh or session-start.sh: ${hook.command.substring(0, 80)}...`
             );
           }
         }
@@ -331,24 +331,10 @@ async function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('observe.sh hooks are async', () => {
+  if (test('no observe.sh hooks in hooks.json (observer disabled)', () => {
     const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
-    const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
-
-    const checkObserveAsync = (hookArray) => {
-      for (const entry of hookArray) {
-        for (const hook of entry.hooks) {
-          if (hook.type === 'command' && hook.command.includes('observe.sh')) {
-            assert.ok(hook.async === true, 'observe.sh hook should be async');
-            assert.ok(hook.timeout <= 10, 'observe.sh hook should have short timeout');
-          }
-        }
-      }
-    };
-
-    for (const [, hookArray] of Object.entries(hooks.hooks)) {
-      checkObserveAsync(hookArray);
-    }
+    const content = fs.readFileSync(hooksPath, 'utf8');
+    assert.ok(!content.includes('observe.sh'), 'hooks.json should not reference observe.sh (observer disabled)');
   })) passed++; else failed++;
 
   if (test('no inline JS in hooks.json (all extracted to scripts)', () => {
@@ -460,6 +446,34 @@ async function runTests() {
     });
     const result = await runScript(path.join(scriptsDir, 'block-destructive-git.js'), input);
     assert.strictEqual(result.code, 0, `Should exit 0 for git add, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('blocks git push --force-with-lease', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git push --force-with-lease origin main' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-destructive-git.js'), input);
+    assert.strictEqual(result.code, 1, `Should exit 1 for force-with-lease push, got ${result.code}`);
+    assert.ok(result.stderr.includes('BLOCKED'), 'Should contain BLOCKED message');
+  })) passed++; else failed++;
+
+  if (await asyncTest('allows git rebase --abort', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git rebase --abort' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-destructive-git.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for rebase --abort, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('allows git pull --rebase', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git pull --rebase origin main' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-destructive-git.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for pull --rebase, got ${result.code}`);
   })) passed++; else failed++;
 
   if (await asyncTest('allows non-Bash tools', async () => {

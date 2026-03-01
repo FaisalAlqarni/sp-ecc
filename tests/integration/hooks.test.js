@@ -399,6 +399,30 @@ async function runTests() {
     assert.strictEqual(result.code, 0, 'Should allow README.md');
   })) passed++; else failed++;
 
+  if (await asyncTest('block-md-creation allows docs/ directory', async () => {
+    const result = await runHookWithInput(
+      path.join(scriptsDir, 'block-md-creation.js'),
+      {
+        tool_name: 'Write',
+        tool_input: { file_path: '/project/docs/architecture.md', content: 'docs content' }
+      }
+    );
+
+    assert.strictEqual(result.code, 0, 'Should allow .md files in docs/');
+  })) passed++; else failed++;
+
+  if (await asyncTest('block-md-creation allows CHANGELOG.md', async () => {
+    const result = await runHookWithInput(
+      path.join(scriptsDir, 'block-md-creation.js'),
+      {
+        tool_name: 'Write',
+        tool_input: { file_path: '/project/CHANGELOG.md', content: 'changelog' }
+      }
+    );
+
+    assert.strictEqual(result.code, 0, 'Should allow CHANGELOG.md');
+  })) passed++; else failed++;
+
   if (await asyncTest('warn-console-log detects console.log in file', async () => {
     const testDir = createTestDir();
     const testFile = path.join(testDir, 'test.js');
@@ -510,29 +534,35 @@ async function runTests() {
   }
 
   // ==========================================
-  // Language Rule Directories Tests
+  // Language Rules Deleted Tests
   // ==========================================
-  console.log('\nLanguage Rule Directories:');
+  console.log('\nLanguage Rules Deleted:');
 
-  const languages = ['ruby', 'rails', 'dart', 'flutter', 'django', 'java', 'springboot'];
-  const ruleFiles = ['coding-style.md', 'testing.md', 'patterns.md', 'hooks.md', 'security.md'];
+  const deletedLanguages = ['ruby', 'rails', 'dart', 'flutter', 'django', 'java', 'springboot', 'typescript', 'python', 'golang'];
 
-  for (const lang of languages) {
-    if (await asyncTest(`rules/${lang}/ has all 5 required files`, async () => {
-      for (const file of ruleFiles) {
-        const filePath = path.join(__dirname, '..', '..', 'rules', lang, file);
-        assert.ok(fs.existsSync(filePath), `Missing: rules/${lang}/${file}`);
-      }
-    })) passed++; else failed++;
-
-    if (await asyncTest(`rules/${lang}/ files have cross-reference header`, async () => {
-      for (const file of ruleFiles) {
-        const filePath = path.join(__dirname, '..', '..', 'rules', lang, file);
-        const content = fs.readFileSync(filePath, 'utf8');
-        assert.ok(content.includes('This file extends'), `Missing cross-reference in rules/${lang}/${file}`);
-      }
+  for (const lang of deletedLanguages) {
+    if (await asyncTest(`rules/${lang}/ directory does not exist (deleted)`, async () => {
+      const dirPath = path.join(__dirname, '..', '..', 'rules', lang);
+      assert.ok(!fs.existsSync(dirPath), `rules/${lang}/ should have been deleted`);
     })) passed++; else failed++;
   }
+
+  // ==========================================
+  // Agent Model Tier Tests
+  // ==========================================
+  console.log('\nAgent Model Tiers:');
+
+  if (await asyncTest('tdd-guide agent uses sonnet (not opus)', async () => {
+    const content = fs.readFileSync(path.join(__dirname, '..', '..', 'agents', 'tdd-guide.md'), 'utf8');
+    assert.ok(content.includes('model: sonnet'), 'tdd-guide should use model: sonnet');
+    assert.ok(!content.includes('model: opus'), 'tdd-guide should NOT use model: opus');
+  })) passed++; else failed++;
+
+  if (await asyncTest('refactor-cleaner agent uses sonnet (not opus)', async () => {
+    const content = fs.readFileSync(path.join(__dirname, '..', '..', 'agents', 'refactor-cleaner.md'), 'utf8');
+    assert.ok(content.includes('model: sonnet'), 'refactor-cleaner should use model: sonnet');
+    assert.ok(!content.includes('model: opus'), 'refactor-cleaner should NOT use model: opus');
+  })) passed++; else failed++;
 
   // ==========================================
   // Enhanced Common Rules Tests
@@ -572,6 +602,31 @@ async function runTests() {
       content.includes('framework-agnostic') || content.includes('Framework-agnostic') || content.includes('any UI framework'),
       'frontend-patterns should mention framework-agnostic nature'
     );
+  })) passed++; else failed++;
+
+  // ==========================================
+  // Hook Placement Tests
+  // ==========================================
+  console.log('\nHook Placement:');
+
+  if (_test('typescript-check is in Stop hook (not PostToolUse)', () => {
+    const stopHooks = hooks.hooks.Stop || [];
+    const postHooks = hooks.hooks.PostToolUse || [];
+
+    const inStop = stopHooks.some(entry =>
+      entry.hooks.some(h => h.command && h.command.includes('typescript-check.js'))
+    );
+    const inPost = postHooks.some(entry =>
+      entry.hooks.some(h => h.command && h.command.includes('typescript-check.js'))
+    );
+
+    assert.ok(inStop, 'typescript-check.js should be in Stop hooks');
+    assert.ok(!inPost, 'typescript-check.js should NOT be in PostToolUse hooks');
+  })) passed++; else failed++;
+
+  if (_test('no observe.sh hooks in hooks.json', () => {
+    const content = fs.readFileSync(hooksJsonPath, 'utf8');
+    assert.ok(!content.includes('observe.sh'), 'hooks.json should not reference observe.sh');
   })) passed++; else failed++;
 
   // ==========================================

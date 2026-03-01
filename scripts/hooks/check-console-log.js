@@ -12,13 +12,8 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 
-let data = '';
-
-// Read stdin
-process.stdin.on('data', chunk => {
-  data += chunk;
-});
-
+// Drain stdin (Stop hooks receive it but we use git diff instead)
+process.stdin.resume();
 process.stdin.on('end', () => {
   try {
     // Check if we're in a git repository

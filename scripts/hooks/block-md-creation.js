@@ -4,8 +4,8 @@
  * PreToolUse hook that blocks creation of random .md/.txt files.
  *
  * Keeps documentation consolidated. Allows specific files and directories:
- * - README.md, CLAUDE.md, AGENTS.md, CONTRIBUTING.md
- * - Files in tasks/, docs/plans/
+ * - README.md, CLAUDE.md, AGENTS.md, CONTRIBUTING.md, CHANGELOG.md, LICENSE.md
+ * - Files in tasks/, docs/
  */
 
 const { readStdinJson, log } = require('../lib/utils');
@@ -25,12 +25,12 @@ async function main() {
   }
 
   // Allow specific files
-  if (/(README|CLAUDE|AGENTS|CONTRIBUTING)\.md$/.test(filePath)) {
+  if (/(README|CLAUDE|AGENTS|CONTRIBUTING|CHANGELOG|LICENSE)\.md$/.test(filePath)) {
     process.exit(0);
   }
 
-  // Allow files in tasks/ or docs/plans/
-  if (/\btasks\//.test(filePath) || /\bdocs\/plans\//.test(filePath)) {
+  // Allow files in tasks/ or docs/
+  if (/\btasks\//.test(filePath) || /\bdocs\//.test(filePath)) {
     process.exit(0);
   }
 

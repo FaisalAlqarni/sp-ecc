@@ -3,7 +3,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"git (push.*-(-force|f)|reset.*--hard|clean.*-f|branch.*-D|checkout.*-- \\\\.|rebase)\"",
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"git (push.*(-(-force|f)|--force-with-lease)|reset.*--hard|clean.*-f|branch.*-D|checkout.*-- \\\\.|rebase(?!.*--abort))\"",
         "hooks": [
           {
             "type": "command",
@@ -43,7 +43,7 @@
         "description": "Reminder to use tmux for long-running commands"
       },
       {
-        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\.(md|txt)$\" && !(tool_input.file_path matches \"README\\.md|CLAUDE\\.md|AGENTS\\.md|CONTRIBUTING\\.md\")",
+        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\.(md|txt)$\" && !(tool_input.file_path matches \"README\\.md|CLAUDE\\.md|AGENTS\\.md|CONTRIBUTING\\.md|CHANGELOG\\.md|LICENSE\")",
         "hooks": [
           {
             "type": "command",
@@ -61,18 +61,6 @@
           }
         ],
         "description": "Suggest manual compaction at logical intervals"
-      },
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh\"",
-            "async": true,
-            "timeout": 5
-          }
-        ],
-        "description": "Capture tool observations for learning pipeline"
       }
     ],
     "PreCompact": [
@@ -93,8 +81,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\"",
-            "async": true
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\""
           }
         ],
         "description": "Superpowers session initialization (shell-based)"
@@ -132,16 +119,6 @@
         "description": "Auto-format files after edits (auto-detects Biome or Prettier)"
       },
       {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.(ts|tsx)$\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-node.sh\" \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/typescript-check.js\""
-          }
-        ],
-        "description": "TypeScript check after editing .ts/.tsx files"
-      },
-      {
         "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.(ts|tsx|js|jsx)$\"",
         "hooks": [
           {
@@ -150,18 +127,6 @@
           }
         ],
         "description": "Warn about console.log statements after edits"
-      },
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh\"",
-            "async": true,
-            "timeout": 5
-          }
-        ],
-        "description": "Capture tool observations for learning pipeline"
       }
     ],
     "Stop": [
@@ -174,6 +139,16 @@
           }
         ],
         "description": "Check for console.log in modified files after each response"
+      },
+      {
+        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.(ts|tsx)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-node.sh\" \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/typescript-check.js\""
+          }
+        ],
+        "description": "TypeScript check after editing .ts/.tsx files"
       }
     ],
     "SessionEnd": [
