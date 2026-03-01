@@ -2,7 +2,7 @@
 name: e2e-runner
 description: End-to-end testing specialist using Vercel Agent Browser (preferred) with Playwright fallback. Use PROACTIVELY for generating, maintaining, and running E2E tests. Manages test journeys, quarantines flaky tests, uploads artifacts (screenshots, videos, traces), and ensures critical user flows work.
 tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
-model: opus
+model: sonnet
 ---
 
 # E2E Test Runner
@@ -97,6 +97,17 @@ await browser.startScreencast()  // Stream viewport frames
 
 ### Agent Browser with Claude Code
 If you have the `agent-browser` skill installed, use `/agent-browser` for interactive browser automation tasks.
+
+### Playwright MCP Tools
+
+When available as an MCP server, Playwright tools can be used directly:
+- `browser_navigate` — Navigate to URL
+- `browser_click` — Click elements by text/selector
+- `browser_fill_form` — Fill form fields
+- `browser_take_screenshot` — Capture page state
+- `browser_snapshot` — Get accessibility tree snapshot
+
+Check available tools before falling back to CLI-based Playwright.
 
 ---
 

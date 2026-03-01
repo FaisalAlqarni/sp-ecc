@@ -49,6 +49,17 @@ Create detailed steps with:
 - Minimize context switching
 - Enable incremental testing
 
+### 5. Phasing (Large Features)
+
+When the feature spans many files or components, break into independently deliverable phases:
+
+- **Phase 1: MVP** — Smallest slice that provides value
+- **Phase 2: Core** — Complete happy path
+- **Phase 3: Hardening** — Edge cases, error handling, polish
+- **Phase 4: Optimization** — Performance, monitoring, analytics
+
+Each phase should be mergeable independently. Avoid plans that require all phases to complete before anything works.
+
 ## Plan Format
 
 ```markdown

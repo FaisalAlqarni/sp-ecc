@@ -421,6 +421,160 @@ async function runTests() {
   })) passed++; else failed++;
 
   // ==========================================
+  // Formatter Auto-Detection Tests
+  // ==========================================
+  console.log('\nFormatter Auto-Detection:');
+
+  if (await asyncTest('formatter hook exits 0 when no config found', async () => {
+    const testDir = createTestDir();
+    const testFile = path.join(testDir, 'test.js');
+    fs.writeFileSync(testFile, 'const x = 1;\n');
+
+    try {
+      const result = await runHookWithInput(
+        path.join(scriptsDir, 'prettier-format.js'),
+        {
+          tool_name: 'Edit',
+          tool_input: { file_path: testFile }
+        }
+      );
+
+      assert.strictEqual(result.code, 0, 'Should exit 0 when no formatter config found');
+    } finally {
+      cleanupTestDir(testDir);
+    }
+  })) passed++; else failed++;
+
+  if (await asyncTest('formatter hook exits 0 for non-existent file', async () => {
+    const result = await runHookWithInput(
+      path.join(scriptsDir, 'prettier-format.js'),
+      {
+        tool_name: 'Edit',
+        tool_input: { file_path: '/tmp/nonexistent-file-12345.js' }
+      }
+    );
+
+    assert.strictEqual(result.code, 0, 'Should exit 0 for non-existent file');
+  })) passed++; else failed++;
+
+  // ==========================================
+  // New Files Existence Tests
+  // ==========================================
+  console.log('\nNew Files Existence:');
+
+  if (await asyncTest('security-scan skill exists', async () => {
+    const skillPath = path.join(__dirname, '..', '..', 'skills', 'security-scan', 'SKILL.md');
+    assert.ok(fs.existsSync(skillPath), 'skills/security-scan/SKILL.md should exist');
+    const content = fs.readFileSync(skillPath, 'utf8');
+    assert.ok(content.includes('name: security-scan'), 'Should have correct frontmatter');
+  })) passed++; else failed++;
+
+  if (await asyncTest('skill-stocktake skill exists', async () => {
+    const skillPath = path.join(__dirname, '..', '..', 'skills', 'skill-stocktake', 'SKILL.md');
+    assert.ok(fs.existsSync(skillPath), 'skills/skill-stocktake/SKILL.md should exist');
+    const content = fs.readFileSync(skillPath, 'utf8');
+    assert.ok(content.includes('name: skill-stocktake'), 'Should have correct frontmatter');
+  })) passed++; else failed++;
+
+  if (await asyncTest('learn-eval command exists', async () => {
+    const cmdPath = path.join(__dirname, '..', '..', 'commands', 'learn-eval.md');
+    assert.ok(fs.existsSync(cmdPath), 'commands/learn-eval.md should exist');
+    const content = fs.readFileSync(cmdPath, 'utf8');
+    assert.ok(content.includes('learn-eval'), 'Should contain learn-eval');
+  })) passed++; else failed++;
+
+  // ==========================================
+  // New Common Rules Tests
+  // ==========================================
+  console.log('\nNew Common Rules:');
+
+  const newCommonRules = ['workflow-orchestration.md', 'clarify-first.md', 'model-routing.md'];
+  for (const rule of newCommonRules) {
+    if (await asyncTest(`common rule ${rule} exists`, async () => {
+      const rulePath = path.join(__dirname, '..', '..', 'rules', 'common', rule);
+      assert.ok(fs.existsSync(rulePath), `rules/common/${rule} should exist`);
+    })) passed++; else failed++;
+  }
+
+  // ==========================================
+  // New Skills Tests
+  // ==========================================
+  console.log('\nNew Skills:');
+
+  const newSkills = ['frontend-design', 'clarify-first', 'model-routing'];
+  for (const skill of newSkills) {
+    if (await asyncTest(`skill ${skill} SKILL.md exists`, async () => {
+      const skillPath = path.join(__dirname, '..', '..', 'skills', skill, 'SKILL.md');
+      assert.ok(fs.existsSync(skillPath), `skills/${skill}/SKILL.md should exist`);
+    })) passed++; else failed++;
+  }
+
+  // ==========================================
+  // Language Rule Directories Tests
+  // ==========================================
+  console.log('\nLanguage Rule Directories:');
+
+  const languages = ['ruby', 'rails', 'dart', 'flutter', 'django', 'java', 'springboot'];
+  const ruleFiles = ['coding-style.md', 'testing.md', 'patterns.md', 'hooks.md', 'security.md'];
+
+  for (const lang of languages) {
+    if (await asyncTest(`rules/${lang}/ has all 5 required files`, async () => {
+      for (const file of ruleFiles) {
+        const filePath = path.join(__dirname, '..', '..', 'rules', lang, file);
+        assert.ok(fs.existsSync(filePath), `Missing: rules/${lang}/${file}`);
+      }
+    })) passed++; else failed++;
+
+    if (await asyncTest(`rules/${lang}/ files have cross-reference header`, async () => {
+      for (const file of ruleFiles) {
+        const filePath = path.join(__dirname, '..', '..', 'rules', lang, file);
+        const content = fs.readFileSync(filePath, 'utf8');
+        assert.ok(content.includes('This file extends'), `Missing cross-reference in rules/${lang}/${file}`);
+      }
+    })) passed++; else failed++;
+  }
+
+  // ==========================================
+  // Enhanced Common Rules Tests
+  // ==========================================
+  console.log('\nEnhanced Common Rules:');
+
+  if (await asyncTest('agents.md has Subagent Strategy section', async () => {
+    const content = fs.readFileSync(path.join(__dirname, '..', '..', 'rules', 'common', 'agents.md'), 'utf8');
+    assert.ok(content.includes('Subagent Strategy'), 'Missing Subagent Strategy in agents.md');
+  })) passed++; else failed++;
+
+  if (await asyncTest('coding-style.md has Elegance Check section', async () => {
+    const content = fs.readFileSync(path.join(__dirname, '..', '..', 'rules', 'common', 'coding-style.md'), 'utf8');
+    assert.ok(content.includes('Elegance Check'), 'Missing Elegance Check in coding-style.md');
+  })) passed++; else failed++;
+
+  if (await asyncTest('coding-style.md has Function Length section', async () => {
+    const content = fs.readFileSync(path.join(__dirname, '..', '..', 'rules', 'common', 'coding-style.md'), 'utf8');
+    assert.ok(content.includes('Function Length'), 'Missing Function Length in coding-style.md');
+  })) passed++; else failed++;
+
+  if (await asyncTest('performance.md has Design-Phase Performance section', async () => {
+    const content = fs.readFileSync(path.join(__dirname, '..', '..', 'rules', 'common', 'performance.md'), 'utf8');
+    assert.ok(content.includes('Design-Phase Performance'), 'Missing Design-Phase Performance in performance.md');
+  })) passed++; else failed++;
+
+  // ==========================================
+  // Generalized Frontend Patterns Test
+  // ==========================================
+  console.log('\nGeneralized Frontend Patterns:');
+
+  if (await asyncTest('frontend-patterns skill is framework-agnostic', async () => {
+    const content = fs.readFileSync(path.join(__dirname, '..', '..', 'skills', 'frontend-patterns', 'SKILL.md'), 'utf8');
+    assert.ok(!content.includes('React.'), 'frontend-patterns should be framework-agnostic (found React.)');
+    assert.ok(!content.includes('import {'), 'frontend-patterns should be framework-agnostic (found import)');
+    assert.ok(
+      content.includes('framework-agnostic') || content.includes('Framework-agnostic') || content.includes('any UI framework'),
+      'frontend-patterns should mention framework-agnostic nature'
+    );
+  })) passed++; else failed++;
+
+  // ==========================================
   // Error Handling Tests
   // ==========================================
   console.log('\nError Handling:');

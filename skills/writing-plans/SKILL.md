@@ -26,6 +26,17 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 - "Run the tests and make sure they pass" - step
 - "Commit" - step
 
+## Requirements Restatement (Step 1 of Every Plan)
+
+Before writing any plan content, always output:
+
+**Requirements as I understand them:**
+- [Requirement 1 — in your own words]
+- [Requirement 2]
+- [Assumption 1]
+
+Wait for human confirmation before investing in plan detail. Misunderstandings caught here save hours of wasted implementation.
+
 ## Plan Document Header
 
 **Every plan MUST start with this header:**
@@ -41,6 +52,14 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Tech Stack:** [Key technologies/libraries]
 
+**Complexity:** High / Medium / Low
+
+**Risks:**
+- HIGH: [risk — mitigation]
+- MEDIUM: [risk — mitigation]
+
+**Testing:** Unit: [what], Integration: [what], E2E: [if applicable]
+
 ---
 ```
 
@@ -53,6 +72,8 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 - Create: `exact/path/to/file.py`
 - Modify: `exact/path/to/existing.py:123-145`
 - Test: `tests/exact/path/to/test.py`
+
+**Depends on:** Task N (if applicable, omit if none)
 
 **Step 1: Write the failing test**
 
@@ -94,9 +115,33 @@ git commit -m "feat: add specific feature"
 - Reference relevant skills with @ syntax
 - DRY, YAGNI, TDD, frequent commits
 
+## Phasing Large Features
+
+For features spanning 10+ tasks, phase into independently shippable slices:
+- **MVP:** Smallest slice that provides value
+- **Core:** Complete happy path
+- **Hardening:** Edge cases, error handling
+- **Polish:** Optimization, monitoring
+
+Each phase should be mergeable on its own.
+
+## Plan Quality Red Flags
+
+Before presenting the plan, check:
+- [ ] Every task has exact file paths
+- [ ] Testing strategy is included
+- [ ] Dependencies between tasks are noted
+- [ ] Each phase can ship independently (for large features)
+- [ ] No steps say "add validation" — complete code is provided
+
 ## Execution Handoff
 
 After saving the plan, offer execution choice:
+
+End every plan document with:
+
+---
+**READY?** Proceed / Modify: [changes] / Different approach: [alternative]
 
 **"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
 

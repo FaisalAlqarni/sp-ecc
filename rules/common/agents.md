@@ -47,3 +47,11 @@ For complex problems, use split role sub-agents:
 - Security expert
 - Consistency reviewer
 - Redundancy checker
+
+## Subagent Strategy
+
+- Use subagents liberally to keep main context window clean
+- Offload research and exploration to subagents — not just implementation
+- For complex problems, throw more compute at it — dispatch parallel agents
+- When in doubt, dispatch a subagent rather than polluting main context
+- Each subagent gets one focused task for clean execution

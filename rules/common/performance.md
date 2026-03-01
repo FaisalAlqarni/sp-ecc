@@ -7,12 +7,12 @@
 - Pair programming and code generation
 - Worker agents in multi-agent systems
 
-**Sonnet 4.5** (Best coding model):
+**Sonnet 4.6** (Best coding model):
 - Main development work
 - Orchestrating multi-agent workflows
 - Complex coding tasks
 
-**Opus 4.5** (Deepest reasoning):
+**Opus 4.6** (Deepest reasoning):
 - Complex architectural decisions
 - Maximum reasoning requirements
 - Research and analysis tasks
@@ -53,3 +53,21 @@ If build fails:
 2. Analyze error messages
 3. Fix incrementally
 4. Verify after each fix
+
+## Design-Phase Performance Thinking
+
+- Think about performance from the outset — the biggest wins (1000x) come in design, not profiling
+- Perform back-of-envelope sketches for network, disk, memory, and CPU costs before implementing
+- Sketches are cheap — use them to land within 90% of the optimal solution
+
+## Batch Operations
+
+- Amortize network, disk, memory, and CPU costs by batching
+- Don't do one-at-a-time when you can batch
+- Batching improves throughput and reduces context-switching overhead
+
+## Resource Priority
+
+- Optimize for slowest resources first: Network → Disk → Memory → CPU
+- Compensate for frequency — a cheap operation done 1000x may cost more than an expensive one done once
+- Distinguish between control plane (setup, config) and data plane (hot path) — optimize the data plane

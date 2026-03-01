@@ -68,6 +68,20 @@ digraph tdd_cycle {
 }
 ```
 
+### Step 0: Define the API (Features Only)
+
+For new features, start with a one-line user story:
+```
+As a [role], I want [action], so that [benefit]
+```
+
+Then define the interface before writing tests:
+- Function signatures with parameter and return types
+- Stub with `throw new Error('Not implemented')` (or language equivalent)
+- This ensures RED fails for the right reason (not implemented) rather than type errors
+
+Skip this step for bug fixes — go straight to RED with a test reproducing the bug.
+
 ### RED - Write Failing Test
 
 Write one minimal test showing what should happen.
@@ -204,10 +218,10 @@ After completing a feature with tests, check coverage:
 /sp-ecc:test-coverage
 ```
 
-**Interpret results:**
-- **80%+ coverage:** Good baseline
-- **90%+ coverage:** Excellent
-- **<80% coverage:** Add more tests
+**Coverage standards:**
+- **80% minimum** for all code
+- **100% required** for: authentication, payment, security-critical, core business logic
+- **<80%:** Add more tests before proceeding
 
 **Focus on:**
 - Critical paths (authentication, payment, data integrity)
@@ -243,6 +257,16 @@ If no: Continue with unit tests only
 
 **Opt-out:** See `docs/integration/OPT-OUT.md` to disable E2E suggestions.
 
+## Test Tiers
+
+| Tier | What | When |
+|------|------|------|
+| Unit | Functions, modules, pure logic | Always |
+| Integration | API routes, DB operations, service interactions | Always |
+| E2E | User flows, browser automation | User-facing features (optional, see OPT-OUT.md) |
+
+Follow your project's existing test file organization conventions.
+
 ## Good Tests
 
 | Quality | Good | Bad |
@@ -250,6 +274,37 @@ If no: Continue with unit tests only
 | **Minimal** | One thing. "and" in name? Split it. | `test('validates email and domain and whitespace')` |
 | **Clear** | Name describes behavior | `test('test1')` |
 | **Shows intent** | Demonstrates desired API | Obscures what code should do |
+
+## Common Test Mistakes
+
+**Testing implementation vs behavior:**
+```
+// WRONG: Tests internal state
+expect(component.state.count).toBe(5)
+
+// RIGHT: Tests what user sees
+expect(screen.getByText('Count: 5')).toBeInTheDocument()
+```
+
+**Brittle vs semantic selectors:**
+```
+// WRONG: Tied to CSS class
+await page.click('.btn-xyz-123')
+
+// RIGHT: Semantic selector
+await page.click('button:has-text("Submit")')
+```
+
+**Dependent vs isolated tests:**
+```
+// WRONG: Depends on previous test
+test('creates user', () => { /* creates testUser */ })
+test('updates same user', () => { /* uses testUser from above */ })
+
+// RIGHT: Each test is self-contained
+test('creates user', () => { const user = createTestUser(); /* ... */ })
+test('updates user', () => { const user = createTestUser(); /* ... */ })
+```
 
 ## Why Order Matters
 
@@ -401,6 +456,10 @@ Can't check all boxes? You skipped TDD. Start over.
 Bug found? Write failing test reproducing it. Follow TDD cycle. Test proves fix and prevents regression.
 
 Never fix bugs without a test.
+
+## Workflow Pipeline
+
+Full workflow: `writing-plans` → `test-driven-development` → `requesting-code-review` → `/sp-ecc:test-coverage`
 
 ## Testing Anti-Patterns
 

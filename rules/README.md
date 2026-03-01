@@ -14,10 +14,20 @@ rules/
 │   ├── patterns.md
 │   ├── hooks.md
 │   ├── agents.md
-│   └── security.md
+│   ├── security.md
+│   ├── workflow-orchestration.md
+│   ├── clarify-first.md
+│   └── model-routing.md
 ├── typescript/      # TypeScript/JavaScript specific
 ├── python/          # Python specific
-└── golang/          # Go specific
+├── golang/          # Go specific
+├── ruby/            # Ruby specific
+├── rails/           # Ruby on Rails specific
+├── dart/            # Dart specific
+├── flutter/         # Flutter specific
+├── django/          # Django specific
+├── java/            # Java specific
+└── springboot/      # Spring Boot specific
 ```
 
 - **common/** contains universal principles — no language-specific code examples.
@@ -33,9 +43,15 @@ cp -r rules/common/* ~/.claude/rules/
 cp -r rules/typescript/* ~/.claude/rules/
 cp -r rules/python/* ~/.claude/rules/
 cp -r rules/golang/* ~/.claude/rules/
+cp -r rules/ruby/* ~/.claude/rules/
+cp -r rules/rails/* ~/.claude/rules/
+cp -r rules/dart/* ~/.claude/rules/
+cp -r rules/flutter/* ~/.claude/rules/
+cp -r rules/django/* ~/.claude/rules/
+cp -r rules/java/* ~/.claude/rules/
+cp -r rules/springboot/* ~/.claude/rules/
 
-# Attention ! ! ! Configure according to your actual project requirements; the configuration here is for reference only.
-
+# Configure according to your actual project requirements
 ```
 
 ## Rules vs Skills
@@ -47,7 +63,7 @@ Language-specific rule files reference relevant skills where appropriate. Rules 
 
 ## Adding a New Language
 
-To add support for a new language (e.g., `rust/`):
+There are currently 10 language directories (typescript, python, golang, ruby, rails, dart, flutter, django, java, springboot) that serve as examples. To add support for another language (e.g., `rust/`):
 
 1. Create a `rules/rust/` directory
 2. Add files that extend the common rules:

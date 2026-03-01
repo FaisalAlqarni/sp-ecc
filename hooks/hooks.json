@@ -129,7 +129,7 @@
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-node.sh\" \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/prettier-format.js\""
           }
         ],
-        "description": "Auto-format JS/TS files with Prettier after edits"
+        "description": "Auto-format files after edits (auto-detects Biome or Prettier)"
       },
       {
         "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.(ts|tsx)$\"",
