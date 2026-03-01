@@ -7,7 +7,7 @@ This project merges the systematic workflows from Superpowers with the battle-te
 ## Credits
 
 - **Jesse Vincent** - Original [Superpowers v4.1.1](https://github.com/obra/superpowers) author (systematic workflows, TDD, debugging)
-- **Affaan Mustafa** - Original [Everything Claude Code v1.4.1](https://github.com/affaan-m/everything-claude-code) author (agents, commands, hooks, patterns)
+- **Affaan Mustafa** - Original [Everything Claude Code v1.7.0](https://github.com/affaan-m/everything-claude-code) author (agents, commands, hooks, patterns)
 - **Faisal Alqarni** - Integration work and enhancements
 
 **Source Versions:** Superpowers 4.1.1 + Everything Claude Code 1.4.1
@@ -133,7 +133,7 @@ git pull
 
 For the individual source projects:
 - **Superpowers v4.1.1**: [github.com/obra/superpowers](https://github.com/obra/superpowers)
-- **Everything Claude Code v1.4.1**: [github.com/affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code)
+- **Everything Claude Code v1.7.0**: [github.com/affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code)
 
 
 ## Layer 1: The Systematic Workflow
@@ -333,4 +333,4 @@ MIT License - see LICENSE file for details
 
 **Original Projects:**
 - Superpowers v4.1.1: https://github.com/obra/superpowers
-- Everything Claude Code v1.4.1: https://github.com/affaan-m/everything-claude-code
+- Everything Claude Code v1.7.0: https://github.com/affaan-m/everything-claude-code
