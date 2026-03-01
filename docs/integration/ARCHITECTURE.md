@@ -7,7 +7,7 @@ Superpower-ECC is an integration project combining:
 - **[Everything Claude Code v1.4.1](https://github.com/affaan-m/everything-claude-code)** by Affaan Mustafa - Battle-tested production tools
 - **Integration** by Faisal Alqarni - Combined into three-layer architecture
 
-Repository: https://github.com/FaisalAlqarni/superpower-ecc
+Repository: https://github.com/FaisalAlqarni/sp-ecc
 
 The architecture is designed around three distinct layers that work together while maintaining clear boundaries.
 
@@ -15,7 +15,7 @@ The architecture is designed around three distinct layers that work together whi
 - **Workflow First**: Systematic workflows guide the overall process
 - **Tool Flexibility**: Quick tools available as shortcuts when appropriate
 - **Specialist Support**: Agents handle focused, specialized tasks
-- **Git Safety**: Read-only git operations only - all writes blocked
+- **Git Safety**: Destructive git operations blocked (force push, reset --hard, rebase, clean -f)
 - **User Control**: All auto-enhancements are opt-out-able
 
 ## Three-Layer Architecture
@@ -50,7 +50,7 @@ The architecture is designed around three distinct layers that work together whi
 │ Layer 3: ECC Standalone Tools                              │
 │ (Optional: Use when workflow is overkill)                   │
 ├─────────────────────────────────────────────────────────────┤
-│ Commands: /ecc:build-fix, /ecc:refactor-clean, etc.       │
+│ Commands: /sp-ecc:build-fix, /sp-ecc:refactor-clean, etc. │
 │ Agents: agent-name (context-loaded specialists)            │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -151,22 +151,22 @@ finishing-a-development-branch skill
 - Fast path for experienced developers
 - Use when: You know exactly what you need and workflow is overkill
 
-**Commands** (`/ecc:*`):
-- **Quick Fixes**: `/ecc:build-fix`, `/ecc:refactor-clean`
-- **Testing**: `/ecc:test-coverage`, `/ecc:e2e`
-- **Code Quality**: `/ecc:update-docs`, `/ecc:verify`
-- **Development**: `/ecc:go-test`, `/ecc:python-review`
-- **Workflows**: `/ecc:multi-plan`, `/ecc:multi-execute`
+**Commands** (`/sp-ecc:*`):
+- **Quick Fixes**: `/sp-ecc:build-fix`, `/sp-ecc:refactor-clean`
+- **Testing**: `/sp-ecc:test-coverage`, `/sp-ecc:e2e`
+- **Code Quality**: `/sp-ecc:update-docs`, `/sp-ecc:verify`
+- **Development**: `/sp-ecc:go-test`, `/sp-ecc:python-review`
+- **Workflows**: `/sp-ecc:multi-plan`, `/sp-ecc:multi-execute`
 
 **Agents** (`agent-*`):
 - **Specialists**: `build-error-resolver`, `test-failure-analyzer`
 - **Domain Experts**: `security-auditor`, `performance-optimizer`
 - **Language-Specific**: `python-refactorer`, `typescript-enhancer`
 
-**Git Restrictions**:
-- All commands and agents are read-only for git
-- Can run: `git status`, `git diff`, `git log`
-- Cannot run: `git commit`, `git push`, `git merge`, etc.
+**Git Safety**:
+- Destructive git operations are blocked (force push, reset --hard, rebase, clean -f)
+- Normal operations allowed: `git commit`, `git push`, `git add`, `git checkout`, `git merge`, `git pull`
+- Read operations always allowed: `git status`, `git diff`, `git log`
 - See Git Policy section below
 
 ## Component Relationships
@@ -196,8 +196,8 @@ digraph skill_interaction {
 
     "requesting-code-review" -> "superpowers-review-mode" [style=dashed, label="invokes"];
 
-    "test-driven-development" -> "/ecc:test-coverage" [style=dotted, label="uses"];
-    "test-driven-development" -> "/ecc:e2e" [style=dotted, label="uses"];
+    "test-driven-development" -> "/sp-ecc:test-coverage" [style=dotted, label="uses"];
+    "test-driven-development" -> "/sp-ecc:e2e" [style=dotted, label="uses"];
 
     "executing-plans" -> "finishing-a-development-branch";
     "subagent-driven-development" -> "finishing-a-development-branch";
@@ -240,7 +240,7 @@ User hits build error
 
 **Command Invocation**:
 ```
-User: /ecc:build-fix
+User: /sp-ecc:build-fix
   └─> Command loads with specific instructions
       └─> Analyzes build errors
       └─> Suggests or applies fixes
@@ -251,111 +251,73 @@ User: /ecc:build-fix
 ```
 Need to commit changes?
   ├─> Yes: Use Layer 1 workflow (executing-plans)
-  └─> No: Can use /ecc:command
+  └─> No: Can use /sp-ecc:command
 
 Need multi-step process?
   ├─> Yes: Use Layer 1 workflow
-  └─> No: Can use /ecc:command
+  └─> No: Can use /sp-ecc:command
 
 Need quality gates?
   ├─> Yes: Use Layer 1 workflow
-  └─> No: Can use /ecc:command
+  └─> No: Can use /sp-ecc:command
 
 Just need quick analysis/suggestion?
-  └─> Yes: Use /ecc:command
+  └─> Yes: Use /sp-ecc:command
 ```
 
-## Git Restriction Enforcement
+## Git Safety Enforcement
 
-**Policy**: All AI operations are read-only for git. No commits, pushes, merges, or branch operations.
+**Policy**: Normal git operations are allowed. Only destructive operations that can rewrite history or cause irreversible data loss are blocked.
 
-### Three-Level Enforcement
+### Allowed Operations
 
-**Level 1: Hook System** (Primary defense)
-- `scripts/hooks/block-git-writes.js` (PreToolUse hook)
-- Blocks 17 git write operations before execution
+**Normal Git Commands** (all allowed):
+```bash
+git add <files>         # Stage changes
+git commit -m "msg"     # Create commits
+git push                # Push to remote
+git pull                # Pull from remote
+git checkout <branch>   # Switch branches
+git branch <name>       # Create branches
+git merge <branch>      # Merge branches
+git fetch               # Fetch from remote
+git stash               # Stash changes
+git worktree add        # Create worktrees
+git status              # Check current state
+git diff                # See changes
+git log                 # View commit history
+```
+
+### Blocked Operations (Destructive Only)
+
+**Hook System** (Primary defense):
+- `scripts/hooks/block-destructive-git.js` (PreToolUse hook)
+- Blocks only operations that can cause irreversible damage
 - Provides clear error message to Claude
-- Cannot be bypassed by AI
 
 **Blocked Operations**:
 ```javascript
 const BLOCKED_OPERATIONS = [
-  'git commit',           // No commits
-  'git push',             // No pushing
-  'git pull',             // No pulling (can create merges)
-  'git merge',            // No merging
-  'git checkout',         // No branch switching
-  'git switch',           // No branch switching
-  'git branch -',         // No branch creation/deletion
-  'git branch -D',        // No force branch deletion
-  'git worktree add',     // No worktree creation
-  'git worktree remove',  // No worktree removal
-  'git reset',            // No history rewriting
-  'git rebase',           // No rebasing
-  'git stash',            // No stashing
-  'git cherry-pick',      // No cherry-picking
-  'git tag ',             // No tagging
-  'git remote add',       // No remote management
-  'git remote remove',    // No remote management
-  'git remote set-url'    // No remote management
+  /git push.*--force/,      // Force push (rewrites remote history)
+  /git push.*-f/,           // Force push shorthand
+  /git reset --hard/,       // Hard reset (discards uncommitted changes)
+  /git clean -f/,           // Force clean (permanently deletes untracked files)
+  /git branch -D/,          // Force delete branch (may lose unmerged work)
+  /git checkout -- \./,     // Checkout all files (discards all working changes)
+  /git rebase/,             // Rebase (rewrites commit history)
 ];
 ```
 
-**Level 2: Agent Instructions** (Secondary defense)
-- All 13 agents include explicit Git Policy section
-- Instructions repeated in every agent file
-- Clear directive: read-only operations only
+### Co-Author Stripping
 
-**Example from agents/build-error-resolver.md**:
-```markdown
-## Git Policy
+A separate `strip-coauthor.js` hook automatically removes `Co-Authored-By` trailer lines from commit messages, keeping the git history clean.
 
-You may read git state (status, diff, log) for context only.
-NEVER execute or suggest git write operations. Work in current directory/branch.
-When work is complete, report completion without git operations.
-```
+### Agent Guidelines
 
-**Level 3: Command Stripping** (Tertiary defense)
-- All 26 /ecc:commands have git write operations removed
-- Commands modified during integration (Task 6)
-- Any git write suggestions removed from command text
-
-### Allowed Operations
-
-**Read-Only Git Commands**:
-```bash
-git status              # Check current state
-git diff                # See changes
-git diff --cached       # See staged changes
-git log                 # View commit history
-git log --oneline       # Compact history
-git show <commit>       # View specific commit
-git blame <file>        # See line authors
-git branch              # List branches (no flags)
-git remote -v           # List remotes
-```
-
-**Why These Are Safe**:
-- No state modification
-- No history changes
-- No remote operations
-- No branch operations
-- Pure information gathering
-
-### User Responsibilities
-
-**User Must**:
-- Create branches manually
-- Commit changes manually
-- Push to remote manually
-- Merge/rebase manually
-- Manage worktrees manually
-
-**Workflow Integration**:
-- Skills guide the process (what to commit, when)
-- Skills suggest commit messages
-- Skills indicate when work is ready
-- User executes all git write operations
+All 13 agents include guidance on git usage:
+- Normal git operations are encouraged where appropriate
+- Destructive operations should be avoided
+- Agents can commit, push, and create branches as needed
 
 ## Hooks Execution Flow
 
@@ -404,31 +366,29 @@ User Stop
       └─> Hook 1: Graceful shutdown
 ```
 
-### Git Write Blocker (Detailed)
+### Destructive Git Blocker (Detailed)
 
-**File**: `scripts/hooks/block-git-writes.js`
+**File**: `scripts/hooks/block-destructive-git.js`
 
 **Execution**:
-1. Claude attempts Bash tool call
-2. PreToolUse hook intercepts
-3. Hook scans command for blocked operations
-4. If found: Return error to Claude, block execution
-5. If clean: Allow tool execution
+1. Claude attempts Bash tool call with a destructive git command
+2. PreToolUse hook intercepts (matcher filters for destructive patterns)
+3. Hook checks command against regex patterns
+4. If destructive: Return error to Claude, block execution
+5. If normal: Allow tool execution
 
 **Error Message to Claude**:
 ```
-ERROR: Git write operation blocked by security policy.
-Detected: git commit
-This project enforces read-only git operations for AI.
-You may use: git status, git diff, git log for context.
-All commits must be performed manually by the user.
+[Hook] BLOCKED: Destructive git operation detected
+[Hook] Reason: Force push (rewrites remote history)
+[Hook] Policy: Destructive git operations are blocked for safety.
+[Hook] Normal git operations (commit, push, add, branch, merge) are allowed.
 ```
 
 **Claude's Response**:
 - Receives error before tool execution
-- Adjusts approach (no retry of same command)
-- Reports to user what needs to be done manually
-- Continues with allowed operations
+- Uses a non-destructive alternative
+- Continues with normal git operations
 
 ### Optional Hooks (Opt-Out Available)
 
@@ -477,13 +437,13 @@ File Location: skills/superpowers/<tool-name>/SKILL.md
 
 ### Layer 3: Commands
 ```
-Format: /ecc:<command-name>
+Format: /sp-ecc:<command-name>
 Examples:
-  - /ecc:build-fix
-  - /ecc:test-coverage
-  - /ecc:refactor-clean
+  - /sp-ecc:build-fix
+  - /sp-ecc:test-coverage
+  - /sp-ecc:refactor-clean
 
-Invocation: User types /ecc:command-name
+Invocation: User types /sp-ecc:command-name
 File Location: commands/ecc-<command-name>.md
 Internal Reference: ecc-<command-name>
 ```
@@ -516,7 +476,7 @@ File Location: skills/<language>-<aspect>/SKILL.md
 **Why These Names**:
 - **superpowers:**: Signals primary workflow system
 - **superpowers-*-mode**: Signals behavioral modifier
-- **/ecc:**: Signals quick tool (Everything Claude Code origin)
+- **/sp-ecc:**: Signals quick tool (Everything Claude Code origin)
 - **agent-**: Signals specialist entity
 - Clear namespace separation prevents conflicts
 - Consistent with existing Superpowers conventions
@@ -579,7 +539,7 @@ superpowers/
 │   └── extract-patterns/      # Wraps continuous-learning-v2
 │
 ├── scripts/hooks/             # Hook implementations
-│   ├── block-git-writes.js    # Git write blocker
+│   ├── block-destructive-git.js # Destructive git blocker
 │   ├── session-start.js
 │   └── session-end.js
 │
@@ -615,20 +575,19 @@ superpowers/
 
 **Trade-off**: More complexity, but much more flexibility
 
-### 2. Why Read-Only Git?
+### 2. Why Block Destructive Git Only?
 
-**Problem**: AI making git commits can be unpredictable
-- Unexpected commit timing
-- Poor commit messages
-- Accidental history rewriting
-- Hard to review what AI did
+**Problem**: Blocking all git writes (commit, push, merge) creates too much friction
+- Users must manually run every git command
+- Workflows can't automate common operations
+- Worktree management becomes impossible
 
-**Solution**: Complete git write ban
-- User maintains full control over history
-- AI guides but doesn't execute
-- Safer for production codebases
+**Solution**: Block only truly destructive operations
+- Force push, hard reset, rebase, clean -f are blocked
+- Normal operations (commit, push, merge, branch) are allowed
+- AI can work through full git workflows
 
-**Trade-off**: More manual work, but much safer
+**Trade-off**: Slightly less restrictive, but much more practical while still safe
 
 ### 3. Why Opt-Out Instead of Opt-In?
 
@@ -644,19 +603,19 @@ superpowers/
 
 **Trade-off**: Some users may find it too proactive, but docs make opt-out trivial
 
-### 4. Why Hooks for Git Blocking?
+### 4. Why Hooks for Destructive Git Blocking?
 
-**Problem**: AI instructions alone are unreliable
-- AI might forget or misinterpret
+**Problem**: AI instructions alone are unreliable for preventing destructive operations
+- AI might forget or misinterpret safety boundaries
 - Different context windows, different behavior
-- Security requires hard guarantees
+- Destructive operations need hard guarantees
 
-**Solution**: PreToolUse hook enforcement
-- Blocks at tool execution level
+**Solution**: PreToolUse hook enforcement for destructive operations
+- Blocks destructive commands at tool execution level
 - Cannot be bypassed by AI
-- Clear error messages guide AI
+- Clear error messages guide AI to non-destructive alternatives
 
-**Trade-off**: Requires hooks system, but necessary for security
+**Trade-off**: Requires hooks system, but necessary for safety
 
 ### 5. Why Mode Skills Instead of Direct Commands?
 
@@ -713,7 +672,7 @@ superpowers/
 **Adding New Commands**:
 1. Create `commands/ecc-<name>.md`
 2. Strip any git write operations
-3. Use `/ecc:<name>` invocation format
+3. Use `/sp-ecc:<name>` invocation format
 4. Document in USAGE.md decision trees
 
 **Adding New Hooks**:
@@ -725,47 +684,43 @@ superpowers/
 ## Security Model
 
 **Threat Model**:
-- AI might attempt git write operations (accidentally or deliberately)
+- AI might attempt destructive git operations (force push, hard reset)
 - User might forget current branch/state
 - Hooks might be bypassed if not carefully implemented
 
 **Defenses**:
-1. **Git Write Blocker** (PreToolUse hook)
-   - Primary defense against git writes
+1. **Destructive Git Blocker** (PreToolUse hook)
+   - Primary defense against destructive operations
    - Cannot be bypassed by AI
-   - Catches all Bash tool attempts
+   - Regex-based matching for accuracy
 
-2. **Agent Instructions** (Git Policy sections)
-   - Secondary defense
-   - Guides AI behavior
-   - Reduces block attempts
+2. **Co-Author Stripping** (PreToolUse hook)
+   - Strips Co-Authored-By lines from commit messages
+   - Keeps git history clean
 
-3. **Command Stripping** (Integration Task 6)
-   - Tertiary defense
-   - Removes git write suggestions from commands
-   - Prevents AI from seeing git write examples
+3. **Agent Guidelines** (Git Policy sections)
+   - Guide AI toward safe git usage
+   - Discourage destructive operations
 
 4. **User Awareness** (Documentation)
-   - USAGE.md explains responsibility
+   - USAGE.md explains git safety model
    - OPT-OUT.md shows control points
    - ARCHITECTURE.md (this doc) explains enforcement
 
 **Limitations**:
-- Cannot prevent user from manually executing AI suggestions
-- Cannot prevent user from disabling git write blocker hook
-- Requires user understanding of git responsibilities
+- Cannot prevent user from disabling hooks
+- Normal git operations are allowed by design
 
 **Best Practices**:
-- Always work in git worktrees (superpowers:using-git-worktrees)
-- Review AI suggestions before executing
-- Test git write blocker in new sessions
+- Work in git worktrees for feature isolation (superpowers:using-git-worktrees)
+- Review AI-generated commits before pushing
 - Keep hooks.json configuration under version control
 
 ## Troubleshooting
 
-**"Git write operation blocked" Error**:
-- Expected: Hook is working correctly
-- Action: Manually execute suggested git operation
+**"Destructive git operation blocked" Error**:
+- Expected: Hook is blocking a destructive operation
+- Action: Use a non-destructive alternative (e.g., `git push` instead of `git push --force`)
 - Check: Are you in a worktree? (recommended)
 
 **Mode Skill Not Activating**:
@@ -780,7 +735,7 @@ superpowers/
 
 **Command Not Found**:
 - Check: Is filename `commands/ecc-<name>.md`?
-- Invocation: `/ecc:<name>`
+- Invocation: `/sp-ecc:<name>`
 - List all: `ls commands/ecc-*.md`
 
 **Language Skill Not Loading**:
@@ -791,7 +746,7 @@ superpowers/
 **Hooks Not Executing**:
 - Check: `hooks/hooks.json` exists and valid JSON
 - Verify: Hook script exists in `scripts/hooks/`
-- Test: Attempt git write operation (should be blocked)
+- Test: Attempt destructive git operation like `git push --force` (should be blocked)
 
 **E2E Tests Too Aggressive**:
 - See: `docs/integration/OPT-OUT.md`
@@ -833,7 +788,7 @@ superpowers/
 - Everything Claude Code v1.4.1 by Affaan Mustafa: https://github.com/affaan-m/everything-claude-code
 
 **This Project:**
-- Repository: https://github.com/FaisalAlqarni/superpower-ecc
+- Repository: https://github.com/FaisalAlqarni/sp-ecc
 - Created and maintained by: Faisal Alqarni
 
 ## Future Considerations
@@ -841,12 +796,12 @@ superpowers/
 **Potential Enhancements**:
 - Additional language support (Rust, Swift, Kotlin)
 - More specialized agents (accessibility-auditor, i18n-validator)
-- Performance profiling commands (/ecc:profile, /ecc:benchmark)
+- Performance profiling commands (/sp-ecc:profile, /sp-ecc:benchmark)
 - Integration testing workflows (superpowers:integration-testing)
 - Database migration patterns (rails-migrations, django-migrations)
 
 **Known Limitations**:
-- Cannot auto-commit (by design)
+- Destructive git operations blocked (by design)
 - Cannot work across multiple worktrees simultaneously
 - Pattern extraction requires manual periodic instinct-export
 - Mode skills cannot be manually invoked (by design)

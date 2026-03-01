@@ -13,8 +13,6 @@ Guide completion of development work by presenting clear options and handling ch
 
 **Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
 
-**Note:** Git operations (branching, merging, worktrees, PRs) are disabled. This skill focuses on verification, presentation, and cleanup without touching git.
-
 ## The Process
 
 ### Step 1: Verify Tests
@@ -55,10 +53,10 @@ Present exactly these 4 options:
 ```
 Implementation complete. All tests passing. What would you like to do?
 
-1. Review the summary and mark complete
-2. Generate a changelist/report I can use for a PR or handoff
-3. Keep working (I want to make more changes)
-4. Discard this work and revert my files
+1. Merge locally (merge this branch into main/target branch)
+2. Push and create PR (push branch to remote, open pull request)
+3. Keep as-is (leave branch for later, continue working)
+4. Discard this work (delete branch and revert)
 
 Which option?
 ```
@@ -67,51 +65,48 @@ Which option?
 
 ### Step 4: Execute Choice
 
-#### Option 1: Review and Mark Complete
+#### Option 1: Merge Locally
 
-Present the full summary from Step 2 in a clean format:
+```bash
+# Switch to target branch
+git checkout main
 
-```
-## Completed Work
+# Merge the feature branch
+git merge <feature-branch> --no-ff -m "Merge: <summary>"
 
-### Changes
-- <file>: <what changed>
-- <file>: <what changed>
-
-### Test Results
-<N> tests passing, 0 failing
-
-### Ready for Integration
-All implementation tasks complete and verified.
+# Delete the feature branch
+git branch -d <feature-branch>
 ```
 
-Then: Report done and ask if anything else is needed.
-
-#### Option 2: Generate Changelist/Report
-
-Generate a structured report suitable for a PR description, handoff doc, or commit message:
-
-```markdown
-## Summary
-<2-3 bullets of what changed and why>
-
-## Changes
-- <file>: <description>
-- <file>: <description>
-
-## Test Plan
-- [ ] <verification step>
-- [ ] <verification step>
-
-## Notes
-<anything the reviewer should know>
+If in a worktree, clean up:
+```bash
+# Remove the worktree
+git worktree remove <worktree-path>
 ```
 
-Present this to the user for copy/paste. Do not run any git commands.
+Report: what was merged, target branch, and cleanup status.
 
-#### Option 3: Keep Working
+#### Option 2: Push and Create PR
 
-Report: "Understood. Continuing development. Let me know what to work on next."
+```bash
+# Push branch to remote
+git push -u origin <feature-branch>
+
+# Create PR using gh CLI
+gh pr create --title "<summary>" --body "<description>"
+```
+
+If in a worktree, clean up:
+```bash
+# Remove the worktree (branch stays on remote)
+git worktree remove <worktree-path>
+```
+
+Report: PR URL, branch name, and cleanup status.
+
+#### Option 3: Keep As-Is
+
+Report: "Understood. Branch `<branch-name>` preserved. Continuing development. Let me know what to work on next."
 
 **Don't change anything.** Stay in current session context.
 
@@ -119,7 +114,7 @@ Report: "Understood. Continuing development. Let me know what to work on next."
 
 **Confirm first:**
 ```
-This will revert all changes made during this implementation:
+This will delete branch <branch-name> and all uncommitted changes:
 
 Files modified:
 - <list of files>
@@ -129,22 +124,28 @@ Type 'discard' to confirm.
 
 Wait for exact confirmation.
 
-If confirmed, explain which files to revert but **do not run git checkout, git reset, or any git commands**. Instead:
+If confirmed:
+```bash
+# Switch to main
+git checkout main
 
-- For files that were modified: restore from last known good state if available, or tell the user which files to revert manually
-- For files that were created: delete them
-- For test files that were added: delete them
+# Delete the branch
+git branch -D <feature-branch>
+
+# If in a worktree, remove it
+git worktree remove <worktree-path> --force
+```
 
 Report what was cleaned up.
 
 ## Quick Reference
 
-| Option | Action | Stays in Session | Generates Report |
-|--------|--------|-----------------|-----------------|
-| 1. Review & complete | Summarize, mark done | No | Summary only |
-| 2. Generate report | Create PR/handoff doc | No | Full changelist |
-| 3. Keep working | Continue development | Yes | None |
-| 4. Discard | Revert files | No | None |
+| Option | Action | Git Operations | Worktree Cleanup |
+|--------|--------|---------------|-----------------|
+| 1. Merge locally | Merge into main | merge, branch -d | worktree remove |
+| 2. Push & PR | Push, create PR | push -u, gh pr create | worktree remove |
+| 3. Keep as-is | Continue working | None | None |
+| 4. Discard | Delete branch | checkout main, branch -D | worktree remove --force |
 
 ## Common Mistakes
 
@@ -156,10 +157,6 @@ Report what was cleaned up.
 - **Problem:** "What should I do next?" → ambiguous
 - **Fix:** Present exactly 4 structured options
 
-**Running git commands**
-- **Problem:** Git operations are disabled for this workflow
-- **Fix:** Never run git commands. Summarize, report, or revert files directly
-
 **No confirmation for discard**
 - **Problem:** Accidentally delete work
 - **Fix:** Require typed "discard" confirmation
@@ -168,15 +165,15 @@ Report what was cleaned up.
 
 **Never:**
 - Proceed with failing tests
-- Run any git commands (commit, merge, push, checkout, branch, worktree, rebase, reset)
 - Delete work without confirmation
 - Assume which branch or remote to target
+- Force push to main/master
 
 **Always:**
 - Verify tests before offering options
 - Present exactly 4 options
 - Get typed confirmation for Option 4
-- Generate clean, copy-pasteable reports for Option 2
+- Clean up worktrees after merge/discard
 
 ## Integration
 
@@ -184,5 +181,6 @@ Report what was cleaned up.
 - **subagent-driven-development** (Step 7) - After all tasks complete
 - **executing-plans** (Step 5) - After all batches complete
 
-**Works without:**
-- **using-git-worktrees** - No worktree cleanup needed since git is disabled
+**Works with:**
+- **using-git-worktrees** - Handles worktree cleanup for all options
+- **requesting-code-review** - Can be invoked before choosing an option

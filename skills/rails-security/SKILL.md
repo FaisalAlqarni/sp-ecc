@@ -1,3 +1,8 @@
+---
+name: rails-security
+description: Use when reviewing or implementing security in Rails applications - covers OWASP guidelines and Rails-specific security patterns
+---
+
 # Rails Security
 
 Comprehensive Ruby on Rails security patterns following OWASP guidelines and industry best practices for building secure web applications.

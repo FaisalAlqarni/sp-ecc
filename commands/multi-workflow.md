@@ -7,7 +7,7 @@ Structured development workflow with quality gates, MCP services, and multi-mode
 ## Usage
 
 ```bash
-/ecc:workflow <task description>
+/sp-ecc:workflow <task description>
 ```
 
 ## Context

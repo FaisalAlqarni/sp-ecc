@@ -236,29 +236,18 @@ async function runTests() {
   })) passed++; else failed++;
 
   if (await asyncTest('blocking hooks output BLOCKED message', async () => {
-    // Test the dev server blocking hook
-    const blockingCommand = hooks.hooks.PreToolUse[0].hooks[0].command;
-    const match = blockingCommand.match(/^node -e "(.+)"$/s);
-
-    const proc = spawn('node', ['-e', match[1]], {
-      stdio: ['pipe', 'pipe', 'pipe']
+    // Test the destructive git blocker with a force push command
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git push --force origin main' }
     });
+    const result = await runHookWithInput(
+      path.join(scriptsDir, 'block-destructive-git.js'),
+      JSON.parse(input)
+    );
 
-    let stderr = '';
-    let code = null;
-    proc.stderr.on('data', data => stderr += data);
-
-    proc.stdin.end();
-
-    await new Promise(resolve => {
-      proc.on('close', (c) => {
-        code = c;
-        resolve();
-      });
-    });
-
-    assert.ok(stderr.includes('BLOCKED'), 'Blocking hook should output BLOCKED');
-    assert.strictEqual(code, 1, 'Blocking hook should exit with code 1');
+    assert.ok(result.stderr.includes('BLOCKED'), 'Blocking hook should output BLOCKED');
+    assert.strictEqual(result.code, 1, 'Blocking hook should exit with code 1');
   })) passed++; else failed++;
 
   // ==========================================
@@ -272,25 +261,13 @@ async function runTests() {
   })) passed++; else failed++;
 
   if (await asyncTest('blocking hooks exit with code 1', async () => {
-    // The dev server blocker always blocks
-    const blockingCommand = hooks.hooks.PreToolUse[0].hooks[0].command;
-    const match = blockingCommand.match(/^node -e "(.+)"$/s);
+    // The destructive git blocker should exit 1 for destructive commands
+    const result = await runHookWithInput(
+      path.join(scriptsDir, 'block-destructive-git.js'),
+      { tool_name: 'Bash', tool_input: { command: 'git reset --hard HEAD' } }
+    );
 
-    const proc = spawn('node', ['-e', match[1]], {
-      stdio: ['pipe', 'pipe', 'pipe']
-    });
-
-    let code = null;
-    proc.stdin.end();
-
-    await new Promise(resolve => {
-      proc.on('close', (c) => {
-        code = c;
-        resolve();
-      });
-    });
-
-    assert.strictEqual(code, 1, 'Blocking hook should exit 1');
+    assert.strictEqual(result.code, 1, 'Blocking hook should exit 1');
   })) passed++; else failed++;
 
   if (await asyncTest('hooks handle missing files gracefully', async () => {
@@ -368,35 +345,79 @@ async function runTests() {
   })) passed++; else failed++;
 
   if (await asyncTest('PostToolUse PR hook extracts PR URL', async () => {
-    // Find the PR logging hook
-    const prHook = hooks.hooks.PostToolUse.find(h =>
-      h.description && h.description.includes('PR URL')
+    // Test the log-pr-url.js script directly
+    const result = await runHookWithInput(
+      path.join(scriptsDir, 'log-pr-url.js'),
+      {
+        tool_name: 'Bash',
+        tool_input: { command: 'gh pr create --title "Test"' },
+        tool_output: { output: 'Creating pull request...\nhttps://github.com/owner/repo/pull/123' }
+      }
     );
 
-    assert.ok(prHook, 'PR hook should exist');
-
-    const match = prHook.hooks[0].command.match(/^node -e "(.+)"$/s);
-
-    const proc = spawn('node', ['-e', match[1]], {
-      stdio: ['pipe', 'pipe', 'pipe']
-    });
-
-    let stderr = '';
-    proc.stderr.on('data', data => stderr += data);
-
-    // Simulate gh pr create output
-    proc.stdin.write(JSON.stringify({
-      tool_input: { command: 'gh pr create --title "Test"' },
-      tool_output: { output: 'Creating pull request...\nhttps://github.com/owner/repo/pull/123' }
-    }));
-    proc.stdin.end();
-
-    await new Promise(resolve => proc.on('close', resolve));
-
+    assert.strictEqual(result.code, 0, 'Should exit 0');
     assert.ok(
-      stderr.includes('PR created') || stderr.includes('github.com'),
+      result.stderr.includes('PR created') || result.stderr.includes('github.com'),
       'Should extract and log PR URL'
     );
+  })) passed++; else failed++;
+
+  if (await asyncTest('block-md-creation blocks random .md files', async () => {
+    const result = await runHookWithInput(
+      path.join(scriptsDir, 'block-md-creation.js'),
+      {
+        tool_name: 'Write',
+        tool_input: { file_path: '/project/notes.md', content: 'some notes' }
+      }
+    );
+
+    assert.strictEqual(result.code, 1, 'Should block random .md creation');
+    assert.ok(result.stderr.includes('BLOCKED'), 'Should output BLOCKED');
+  })) passed++; else failed++;
+
+  if (await asyncTest('block-md-creation allows tasks/ directory', async () => {
+    const result = await runHookWithInput(
+      path.join(scriptsDir, 'block-md-creation.js'),
+      {
+        tool_name: 'Write',
+        tool_input: { file_path: '/project/tasks/todo.md', content: 'task list' }
+      }
+    );
+
+    assert.strictEqual(result.code, 0, 'Should allow .md files in tasks/');
+  })) passed++; else failed++;
+
+  if (await asyncTest('block-md-creation allows README.md', async () => {
+    const result = await runHookWithInput(
+      path.join(scriptsDir, 'block-md-creation.js'),
+      {
+        tool_name: 'Write',
+        tool_input: { file_path: '/project/README.md', content: 'readme content' }
+      }
+    );
+
+    assert.strictEqual(result.code, 0, 'Should allow README.md');
+  })) passed++; else failed++;
+
+  if (await asyncTest('warn-console-log detects console.log in file', async () => {
+    const testDir = createTestDir();
+    const testFile = path.join(testDir, 'test.js');
+    fs.writeFileSync(testFile, 'const x = 1;\nconsole.log(x);\n');
+
+    try {
+      const result = await runHookWithInput(
+        path.join(scriptsDir, 'warn-console-log.js'),
+        {
+          tool_name: 'Edit',
+          tool_input: { file_path: testFile }
+        }
+      );
+
+      assert.strictEqual(result.code, 0, 'Should exit 0 (non-blocking)');
+      assert.ok(result.stderr.includes('WARNING'), 'Should warn about console.log');
+    } finally {
+      cleanupTestDir(testDir);
+    }
   })) passed++; else failed++;
 
   // ==========================================

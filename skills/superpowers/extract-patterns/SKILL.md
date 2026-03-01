@@ -19,10 +19,10 @@ Wraps ECC's continuous-learning-v2 system to extract and save useful patterns fr
 
 ### Step 1: Invoke Pattern Extraction
 
-Use `/ecc:learn` command to extract patterns:
+Use `/sp-ecc:learn` command to extract patterns:
 
 ```
-/ecc:learn
+/sp-ecc:learn
 ```
 
 This analyzes the current session for:
@@ -47,7 +47,7 @@ Patterns are automatically saved to the instinct system.
 
 **View saved patterns:**
 ```
-/ecc:instinct-status
+/sp-ecc:instinct-status
 ```
 
 ### Step 4: Optional - Evolve into Skills
@@ -55,7 +55,7 @@ Patterns are automatically saved to the instinct system.
 For mature patterns (high confidence, multiple uses):
 
 ```
-/ecc:evolve
+/sp-ecc:evolve
 ```
 
 This clusters related patterns into reusable skills.
@@ -90,12 +90,12 @@ See: `docs/integration/OPT-OUT.md`
 
 **Export patterns to file:**
 ```
-/ecc:instinct-export
+/sp-ecc:instinct-export
 ```
 
 **Import patterns from file:**
 ```
-/ecc:instinct-import
+/sp-ecc:instinct-import
 ```
 
 Useful for:
@@ -107,11 +107,11 @@ Useful for:
 
 | Command | Purpose |
 |---------|---------|
-| `/ecc:learn` | Extract patterns from session |
-| `/ecc:instinct-status` | View saved patterns |
-| `/ecc:instinct-export` | Export to file |
-| `/ecc:instinct-import` | Import from file |
-| `/ecc:evolve` | Cluster patterns into skills |
+| `/sp-ecc:learn` | Extract patterns from session |
+| `/sp-ecc:instinct-status` | View saved patterns |
+| `/sp-ecc:instinct-export` | Export to file |
+| `/sp-ecc:instinct-import` | Import from file |
+| `/sp-ecc:evolve` | Cluster patterns into skills |
 
 ## Remember
 

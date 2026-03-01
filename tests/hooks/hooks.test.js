@@ -280,11 +280,12 @@ async function runTests() {
     assert.ok(hooks.hooks.PreToolUse, 'Should have PreToolUse hooks');
     assert.ok(hooks.hooks.PostToolUse, 'Should have PostToolUse hooks');
     assert.ok(hooks.hooks.SessionStart, 'Should have SessionStart hooks');
+    assert.ok(hooks.hooks.SessionEnd, 'Should have SessionEnd hooks');
     assert.ok(hooks.hooks.Stop, 'Should have Stop hooks');
     assert.ok(hooks.hooks.PreCompact, 'Should have PreCompact hooks');
   })) passed++; else failed++;
 
-  if (test('all hook commands use node', () => {
+  if (test('all hook commands use run-node.sh, session-start.sh, or observe.sh', () => {
     const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
     const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
 
@@ -293,8 +294,8 @@ async function runTests() {
         for (const hook of entry.hooks) {
           if (hook.type === 'command') {
             assert.ok(
-              hook.command.startsWith('node'),
-              `Hook command should start with 'node': ${hook.command.substring(0, 50)}...`
+              hook.command.includes('run-node.sh') || hook.command.includes('session-start.sh') || hook.command.includes('observe.sh'),
+              `Hook command should use run-node.sh, session-start.sh, or observe.sh: ${hook.command.substring(0, 80)}...`
             );
           }
         }
@@ -328,6 +329,174 @@ async function runTests() {
     for (const [, hookArray] of Object.entries(hooks.hooks)) {
       checkHooks(hookArray);
     }
+  })) passed++; else failed++;
+
+  if (test('observe.sh hooks are async', () => {
+    const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
+    const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
+
+    const checkObserveAsync = (hookArray) => {
+      for (const entry of hookArray) {
+        for (const hook of entry.hooks) {
+          if (hook.type === 'command' && hook.command.includes('observe.sh')) {
+            assert.ok(hook.async === true, 'observe.sh hook should be async');
+            assert.ok(hook.timeout <= 10, 'observe.sh hook should have short timeout');
+          }
+        }
+      }
+    };
+
+    for (const [, hookArray] of Object.entries(hooks.hooks)) {
+      checkObserveAsync(hookArray);
+    }
+  })) passed++; else failed++;
+
+  if (test('no inline JS in hooks.json (all extracted to scripts)', () => {
+    const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
+    const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
+
+    const checkNoInlineJs = (hookArray) => {
+      for (const entry of hookArray) {
+        for (const hook of entry.hooks) {
+          if (hook.type === 'command') {
+            assert.ok(
+              !hook.command.includes('-e "'),
+              `Hook should not use inline JS (-e): ${hook.command.substring(0, 80)}...`
+            );
+          }
+        }
+      }
+    };
+
+    for (const [, hookArray] of Object.entries(hooks.hooks)) {
+      checkNoInlineJs(hookArray);
+    }
+  })) passed++; else failed++;
+
+  if (test('all referenced script files exist', () => {
+    const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
+    const pluginRoot = path.join(__dirname, '..', '..');
+    const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
+
+    const checkScriptExists = (hookArray) => {
+      for (const entry of hookArray) {
+        for (const hook of entry.hooks) {
+          if (hook.type === 'command') {
+            // Extract script paths from the command
+            const scriptMatches = hook.command.match(/\$\{CLAUDE_PLUGIN_ROOT\}\/([^"]+)/g);
+            if (scriptMatches) {
+              for (const match of scriptMatches) {
+                const relativePath = match.replace('${CLAUDE_PLUGIN_ROOT}/', '');
+                const fullPath = path.join(pluginRoot, relativePath);
+                assert.ok(
+                  fs.existsSync(fullPath),
+                  `Referenced script should exist: ${relativePath}`
+                );
+              }
+            }
+          }
+        }
+      }
+    };
+
+    for (const [, hookArray] of Object.entries(hooks.hooks)) {
+      checkScriptExists(hookArray);
+    }
+  })) passed++; else failed++;
+
+  // block-destructive-git.js tests
+  console.log('\nblock-destructive-git.js:');
+
+  if (await asyncTest('blocks git push --force', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git push --force origin main' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-destructive-git.js'), input);
+    assert.strictEqual(result.code, 1, `Should exit 1 for force push, got ${result.code}`);
+    assert.ok(result.stderr.includes('BLOCKED'), 'Should contain BLOCKED message');
+  })) passed++; else failed++;
+
+  if (await asyncTest('blocks git reset --hard', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git reset --hard HEAD~1' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-destructive-git.js'), input);
+    assert.strictEqual(result.code, 1, `Should exit 1 for hard reset, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('blocks git rebase', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git rebase main' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-destructive-git.js'), input);
+    assert.strictEqual(result.code, 1, `Should exit 1 for rebase, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('allows git commit', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git commit -m "test commit"' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-destructive-git.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for normal commit, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('allows git push (non-force)', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git push origin main' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-destructive-git.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for normal push, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('allows git add', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git add -A' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-destructive-git.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for git add, got ${result.code}`);
+  })) passed++; else failed++;
+
+  if (await asyncTest('allows non-Bash tools', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Edit',
+      tool_input: { file_path: 'test.js' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'block-destructive-git.js'), input);
+    assert.strictEqual(result.code, 0, `Should exit 0 for non-Bash tools, got ${result.code}`);
+  })) passed++; else failed++;
+
+  // strip-coauthor.js tests
+  console.log('\nstrip-coauthor.js:');
+
+  if (await asyncTest('strips Co-Authored-By from git commit', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git commit -m "Fix bug\n\nCo-Authored-By: Claude <noreply@anthropic.com>"' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'strip-coauthor.js'), input);
+    assert.strictEqual(result.code, 0, `Exit code should be 0, got ${result.code}`);
+    assert.ok(result.stderr.includes('Stripped'), 'Should report stripping');
+    // stdout should contain the modified command without Co-Authored-By
+    if (result.stdout.trim()) {
+      const output = JSON.parse(result.stdout);
+      assert.ok(!output.tool_input.command.includes('Co-Authored-By'), 'Should have removed Co-Authored-By');
+    }
+  })) passed++; else failed++;
+
+  if (await asyncTest('passes through non-commit commands', async () => {
+    const input = JSON.stringify({
+      tool_name: 'Bash',
+      tool_input: { command: 'git push origin main' }
+    });
+    const result = await runScript(path.join(scriptsDir, 'strip-coauthor.js'), input);
+    assert.strictEqual(result.code, 0, `Exit code should be 0, got ${result.code}`);
+    assert.strictEqual(result.stdout.trim(), '', 'Should not modify non-commit commands');
   })) passed++; else failed++;
 
   // plugin.json validation

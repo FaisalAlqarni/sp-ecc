@@ -4,17 +4,17 @@ description: Analyze local git history to extract coding patterns and generate S
 allowed_tools: ["Bash", "Read", "Write", "Grep", "Glob"]
 ---
 
-# /ecc:skill-create - Local Skill Generation
+# /sp-ecc:skill-create - Local Skill Generation
 
 Analyze your repository's git history to extract coding patterns and generate SKILL.md files that teach Claude your team's practices.
 
 ## Usage
 
 ```bash
-/ecc:skill-create                    # Analyze current repo
-/ecc:skill-create --commits 100      # Analyze last 100 commits
-/ecc:skill-create --output ./skills  # Custom output directory
-/ecc:skill-create --instincts        # Also generate instincts for continuous-learning-v2
+/sp-ecc:skill-create                    # Analyze current repo
+/sp-ecc:skill-create --commits 100      # Analyze last 100 commits
+/sp-ecc:skill-create --output ./skills  # Custom output directory
+/sp-ecc:skill-create --instincts        # Also generate instincts for continuous-learning-v2
 ```
 
 ## What It Does
@@ -104,7 +104,7 @@ Prefix commits with: feat:, fix:, chore:, docs:, test:, refactor:
 
 ## Example Output
 
-Running `/ecc:skill-create` on a TypeScript project might produce:
+Running `/sp-ecc:skill-create` on a TypeScript project might produce:
 
 ```markdown
 ---
@@ -165,9 +165,9 @@ For advanced features (10k+ commits, team sharing, auto-PRs), use the [Skill Cre
 
 ## Related Commands
 
-- `/ecc:instinct-import` - Import generated instincts
-- `/ecc:instinct-status` - View learned instincts
-- `/ecc:evolve` - Cluster instincts into skills/agents
+- `/sp-ecc:instinct-import` - Import generated instincts
+- `/sp-ecc:instinct-status` - View learned instincts
+- `/sp-ecc:evolve` - Cluster instincts into skills/agents
 
 ---
 

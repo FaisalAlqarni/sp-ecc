@@ -16,7 +16,7 @@ This command invokes the **e2e-runner** agent to generate, maintain, and execute
 
 ## When to Use
 
-Use `/ecc:e2e` when:
+Use `/sp-ecc:e2e` when:
 - Testing critical user journeys (login, trading, payments)
 - Verifying multi-step flows work end-to-end
 - Testing UI interactions and navigation
@@ -37,7 +37,7 @@ The e2e-runner agent will:
 ## Example Usage
 
 ```
-User: /ecc:e2e Test the market search and view flow
+User: /sp-ecc:e2e Test the market search and view flow
 
 Agent (e2e-runner):
 # E2E Test Generation: Market Search and View Flow
@@ -330,10 +330,10 @@ For PMX, prioritize these E2E tests:
 
 ## Integration with Other Commands
 
-- Use `/ecc:plan` to identify critical journeys to test
-- Use `/ecc:tdd` for unit tests (faster, more granular)
-- Use `/ecc:e2e` for integration and user journey tests
-- Use `/ecc:code-review` to verify test quality
+- Use `/sp-ecc:plan` to identify critical journeys to test
+- Use `/sp-ecc:tdd` for unit tests (faster, more granular)
+- Use `/sp-ecc:e2e` for integration and user journey tests
+- Use `/sp-ecc:code-review` to verify test quality
 
 ## Related Agents
 

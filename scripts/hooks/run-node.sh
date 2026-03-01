@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Cross-platform Node.js wrapper for Claude Code hooks
 # Finds and executes node in common installation locations
 
@@ -28,12 +28,20 @@ if command -v node >/dev/null 2>&1; then
     exec node "$@"
 fi
 
+# Check for MSYS/Git Bash environment
+if [ -n "$MSYSTEM" ]; then
+    # Running in MSYS2/Git Bash - adjust paths
+    export PATH="/mingw64/bin:/usr/bin:$PATH"
+fi
+
 # Try common installation paths
 NODE_PATHS=(
     "/usr/local/bin/node"           # Mac/Linux: Homebrew, manual install
     "/usr/bin/node"                 # Linux: apt/yum install
     "/opt/homebrew/bin/node"        # Mac: Apple Silicon Homebrew
     "$HOME/.nvm/versions/node/*/bin/node"  # nvm install (find latest)
+    "$HOME/.fnm/node-versions/*/installation/bin/node"  # fnm install
+    "$HOME/.volta/bin/node"         # Volta install
     "/c/Program Files/nodejs/node.exe"     # Windows: Git Bash path
     "C:/Program Files/nodejs/node.exe"     # Windows: native path
     "/mnt/c/Program Files/nodejs/node.exe" # WSL path
@@ -61,5 +69,5 @@ echo "[Hook Error]   1. Restart your terminal/IDE" >&2
 echo "[Hook Error]   2. Verify: node --version" >&2
 echo "[Hook Error] " >&2
 echo "[Hook Error] Hooks are optional - the plugin works without them" >&2
-echo "[Hook Error] but you won't have git write blocking and other features" >&2
-exit 1
+echo "[Hook Error] but you won't have git safety hooks and other features" >&2
+exit 0

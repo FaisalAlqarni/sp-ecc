@@ -25,9 +25,9 @@ python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py status
 ## Usage
 
 ```
-/ecc:instinct-status
-/ecc:instinct-status --domain code-style
-/ecc:instinct-status --low-confidence
+/sp-ecc:instinct-status
+/sp-ecc:instinct-status --domain code-style
+/sp-ecc:instinct-status --low-confidence
 ```
 
 ## What to Do

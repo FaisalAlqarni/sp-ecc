@@ -17,7 +17,7 @@ This command enforces test-driven development methodology for Go code using idio
 
 ## When to Use
 
-Use `/ecc:go-test` when:
+Use `/sp-ecc:go-test` when:
 - Implementing new Go functions
 - Adding test coverage to existing code
 - Fixing bugs (write failing test first)
@@ -36,7 +36,7 @@ REPEAT  → Next test case
 ## Example Session
 
 ````
-User: /ecc:go-test I need a function to validate email addresses
+User: /sp-ecc:go-test I need a function to validate email addresses
 
 Agent:
 # TDD Session: Email Validator
@@ -258,9 +258,9 @@ go test -race -cover ./...
 
 ## Related Commands
 
-- `/ecc:go-build` - Fix build errors
-- `/ecc:go-review` - Review code after implementation
-- `/ecc:verify` - Run full verification loop
+- `/sp-ecc:go-build` - Fix build errors
+- `/sp-ecc:go-review` - Review code after implementation
+- `/sp-ecc:verify` - Run full verification loop
 
 ## Related
 

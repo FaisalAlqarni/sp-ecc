@@ -1,19 +1,17 @@
 {
-  "name": "superpower-ecc-marketplace",
-  "description": "Marketplace for Superpower-ECC plugin",
+  "name": "sp-ecc-marketplace",
+  "description": "Marketplace for sp-ecc plugin",
   "owner": {
-    "name": "Faisal Alqarni",
-    "email": ""
+    "name": "Faisal Alqarni"
   },
   "plugins": [
     {
-      "name": "superpower-ecc",
+      "name": "sp-ecc",
       "description": "Integration of Superpowers and Everything Claude Code",
-      "version": "1.0.2",
+      "version": "1.1",
       "source": "./",
       "author": {
-        "name": "Faisal Alqarni",
-        "email": ""
+        "name": "Faisal Alqarni"
       }
     }
   ]

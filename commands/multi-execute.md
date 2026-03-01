@@ -12,7 +12,7 @@ $ARGUMENTS
 - **Code Sovereignty**: External models have **zero filesystem write access**, all modifications by Claude
 - **Dirty Prototype Refactoring**: Treat Codex/Gemini Unified Diff as "dirty prototype", must refactor to production-grade code
 - **Stop-Loss Mechanism**: Do not proceed to next phase until current phase output is validated
-- **Prerequisite**: Only execute after user explicitly replies "Y" to `/ecc:plan` output (if missing, must confirm first)
+- **Prerequisite**: Only execute after user explicitly replies "Y" to `/sp-ecc:plan` output (if missing, must confirm first)
 
 ---
 
@@ -87,7 +87,7 @@ EOF",
 | Implementation | `~/.claude/.ccg/prompts/codex/architect.md` | `~/.claude/.ccg/prompts/gemini/frontend.md` |
 | Review | `~/.claude/.ccg/prompts/codex/reviewer.md` | `~/.claude/.ccg/prompts/gemini/reviewer.md` |
 
-**Session Reuse**: If `/ecc:plan` provided SESSION_ID, use `resume <SESSION_ID>` to reuse context.
+**Session Reuse**: If `/sp-ecc:plan` provided SESSION_ID, use `resume <SESSION_ID>` to reuse context.
 
 **Wait for Background Tasks** (max timeout 600000ms = 10 minutes):
 
@@ -295,16 +295,16 @@ After audit passes, report to user:
 
 ```bash
 # Execute plan file
-/ecc:execute .claude/plan/feature-name.md
+/sp-ecc:execute .claude/plan/feature-name.md
 
 # Execute task directly (for plans already discussed in context)
-/ecc:execute implement user authentication based on previous plan
+/sp-ecc:execute implement user authentication based on previous plan
 ```
 
 ---
 
-## Relationship with /ecc:plan
+## Relationship with /sp-ecc:plan
 
-1. `/ecc:plan` generates plan + SESSION_ID
+1. `/sp-ecc:plan` generates plan + SESSION_ID
 2. User confirms with "Y"
-3. `/ecc:execute` reads plan, reuses SESSION_ID, executes implementation
+3. `/sp-ecc:execute` reads plan, reuses SESSION_ID, executes implementation

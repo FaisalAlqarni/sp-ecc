@@ -1,10 +1,9 @@
 {
-  "name": "superpower-ecc",
+  "name": "sp-ecc",
   "description": "Integration of Superpowers systematic workflows with Everything Claude Code tools. Features: TDD, debugging, 26 commands, 13 agents, Ruby/Rails Engines, Dart/Flutter state management, git safety, and comprehensive language patterns.",
-  "version": "1.0.2",
+  "version": "1.1",
   "author": {
-    "name": "Faisal Alqarni",
-    "email": ""
+    "name": "Faisal Alqarni"
   },
   "homepage": "https://github.com/FaisalAlqarni/superpower-ecc",
   "repository": "https://github.com/FaisalAlqarni/superpower-ecc",

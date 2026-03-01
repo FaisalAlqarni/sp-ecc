@@ -25,8 +25,7 @@ process.stdin.on('end', () => {
     try {
       execSync('git rev-parse --git-dir', { stdio: 'pipe' });
     } catch {
-      // Not in a git repo, just pass through the data
-      console.log(data);
+      // Not in a git repo, nothing to check
       process.exit(0);
     }
 
@@ -55,7 +54,4 @@ process.stdin.on('end', () => {
   } catch (_error) {
     // Silently ignore errors (git might not be available, etc.)
   }
-
-  // Always output the original data
-  console.log(data);
 });

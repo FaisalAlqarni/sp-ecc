@@ -201,7 +201,7 @@ After completing a feature with tests, check coverage:
 
 **Check coverage:**
 ```
-/ecc:test-coverage
+/sp-ecc:test-coverage
 ```
 
 **Interpret results:**
@@ -235,7 +235,7 @@ For user-facing features (UI, API endpoints), consider E2E tests.
 ```
 "This is a user-facing feature. Would you like to generate E2E tests?"
 
-If yes: /ecc:e2e
+If yes: /sp-ecc:e2e
 If no: Continue with unit tests only
 ```
 

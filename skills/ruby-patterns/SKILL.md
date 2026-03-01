@@ -1,3 +1,8 @@
+---
+name: ruby-patterns
+description: Use when writing Ruby code - provides idiomatic patterns, best practices, and community standards for maintainable Ruby
+---
+
 # Ruby Patterns
 
 Expert guidance for writing idiomatic, maintainable Ruby code following best practices and community standards.

@@ -4,7 +4,7 @@ Sequential agent workflow for complex tasks.
 
 ## Usage
 
-`/ecc:orchestrate [workflow-type] [task-description]`
+`/sp-ecc:orchestrate [workflow-type] [task-description]`
 
 ## Workflow Types
 
@@ -17,7 +17,7 @@ planner -> tdd-guide -> code-reviewer -> security-reviewer
 ### bugfix
 Bug investigation and fix workflow:
 ```
-explorer -> tdd-guide -> code-reviewer
+architect -> tdd-guide -> code-reviewer
 ```
 
 ### refactor
@@ -67,7 +67,7 @@ Between agents, create handoff document:
 ## Example: Feature Workflow
 
 ```
-/ecc:orchestrate feature "Add user authentication"
+/sp-ecc:orchestrate feature "Add user authentication"
 ```
 
 Executes:
@@ -160,7 +160,7 @@ $ARGUMENTS:
 ## Custom Workflow Example
 
 ```
-/ecc:orchestrate custom "architect,tdd-guide,code-reviewer" "Redesign caching layer"
+/sp-ecc:orchestrate custom "architect,tdd-guide,code-reviewer" "Redesign caching layer"
 ```
 
 ## Tips

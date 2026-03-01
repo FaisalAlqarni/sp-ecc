@@ -1,3 +1,8 @@
+---
+name: rails-patterns
+description: Use when working with Ruby on Rails projects - provides patterns for models, controllers, services, and Rails Engines architecture
+---
+
 # Rails Patterns Skill
 
 **Authority:** FINAL

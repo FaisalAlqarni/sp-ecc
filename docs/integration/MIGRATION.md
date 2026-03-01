@@ -7,7 +7,7 @@ Superpower-ECC v1.0 is an integration project that combines:
 - [Everything Claude Code v1.4.1](https://github.com/affaan-m/everything-claude-code) by Affaan Mustafa
 - Integration work by Faisal Alqarni
 
-Repository: https://github.com/FaisalAlqarni/superpower-ecc
+Repository: https://github.com/FaisalAlqarni/sp-ecc
 
 This guide helps you migrate from either original project to this integrated version.
 
@@ -17,8 +17,8 @@ This guide helps you migrate from either original project to this integrated ver
 
 - [ ] Read "Breaking Changes" section (only 2 minor changes)
 - [ ] Install Node.js 24.13.0+ for npm dependencies (optional, for linting)
-- [ ] Review new git policy (AI is read-only for git operations)
-- [ ] Explore new Layer 3 tools (/ecc: commands and agents)
+- [ ] Review new git policy (destructive git operations are blocked)
+- [ ] Explore new Layer 3 tools (/sp-ecc: commands and agents)
 - [ ] Try enhanced TDD workflow with coverage tracking
 - [ ] Check opt-out documentation if auto-features are too proactive
 - [ ] Update any custom skills/commands that interact with git
@@ -32,11 +32,11 @@ This guide helps you migrate from either original project to this integrated ver
 | Git worktrees workflow | ✓ | ✓ (unchanged) |
 | TDD workflow | ✓ | ✓ (enhanced) |
 | Debugging workflow | ✓ | ✓ (unchanged) |
-| Quick commands | ✗ | ✓ (26 new /ecc: commands) |
+| Quick commands | ✗ | ✓ (26 new /sp-ecc: commands) |
 | Specialist agents | ✗ | ✓ (13 new agents) |
 | Mode skills | ✗ | ✓ (3 new modes) |
 | Pattern extraction | ✗ | ✓ (auto-invoked) |
-| Git write restriction | ✗ | ✓ (enforced) |
+| Destructive git blocking | ✗ | ✓ (enforced) |
 | Ruby/Rails support | ✗ | ✓ (4 skills, Rails Engines focus) |
 | Dart/Flutter support | ✗ | ✓ (4 skills, state management focus) |
 | Python/Django support | ✓ | ✓ (unchanged) |
@@ -47,50 +47,42 @@ This guide helps you migrate from either original project to this integrated ver
 
 ## Breaking Changes
 
-### 1. Git Write Operations Blocked
+### 1. Destructive Git Operations Blocked
 
-**What Changed**: AI can no longer execute git write operations (commit, push, merge, etc.).
+**What Changed**: Only destructive git operations are blocked. Normal git operations (commit, push, merge, etc.) are now allowed.
 
-**Why**: Safety and control. User maintains full control over git history.
+**Why**: Safety without friction. Prevents irreversible damage while enabling productive workflows.
 
 **Impact**:
-- AI will guide you to commit, but you must execute manually
-- Workflows will suggest commit messages, you run the command
-- Git worktrees must be created manually (workflow guides you)
+- AI can commit, push, merge, create branches normally
+- Only truly destructive operations are blocked
+- Co-Authored-By lines are automatically stripped from commits
 
-**Migration**:
+**Allowed Operations**:
 ```bash
-# Before (v4.x): AI could commit
-# AI: "I've committed the changes with message 'feat: add feature'"
-
-# After (superpower-ecc v1.0): You commit manually
-# AI: "Ready to commit. Suggested message: 'feat: add feature'"
-# You: git commit -m "feat: add feature"
+git commit          # Allowed
+git push            # Allowed
+git add             # Allowed
+git checkout        # Allowed
+git branch          # Allowed
+git merge           # Allowed
+git pull / fetch    # Allowed
+git status / diff   # Allowed
 ```
 
-**Allowed Operations** (unchanged):
+**Blocked Operations** (destructive only):
 ```bash
-git status          # Still works
-git diff            # Still works
-git log             # Still works
-git blame           # Still works
+git push --force    # Blocked (rewrites remote history)
+git reset --hard    # Blocked (discards uncommitted changes)
+git clean -f        # Blocked (permanently deletes untracked files)
+git branch -D       # Blocked (force deletes branch)
+git rebase          # Blocked (rewrites commit history)
+git checkout -- .   # Blocked (discards all working changes)
 ```
 
-**Blocked Operations** (new in Superpower-ECC v1.0):
-```bash
-git commit          # Blocked
-git push            # Blocked
-git merge           # Blocked
-git checkout        # Blocked (branch switching)
-git switch          # Blocked
-git reset           # Blocked
-git rebase          # Blocked
-# See full list in ARCHITECTURE.md
-```
+**Hook Enforcement**: `scripts/hooks/block-destructive-git.js` enforces this policy.
 
-**Hook Enforcement**: `scripts/hooks/block-git-writes.js` enforces this policy. AI cannot bypass.
-
-**Opt-Out**: You can disable the git write blocker hook, but not recommended. See OPT-OUT.md.
+**Opt-Out**: You can disable the destructive git blocker hook. See OPT-OUT.md.
 
 ### 2. Auto-Invoked Features
 
@@ -111,31 +103,31 @@ git rebase          # Blocked
 - All auto-features can be disabled
 - Defaults work well for most users
 
-## What's New in superpower-ecc v1.0
+## What's New in sp-ecc v1.0
 
 ### Layer 3: Quick Tools (New)
 
-**Commands** (`/ecc:*`):
+**Commands** (`/sp-ecc:*`):
 ```bash
 # Quick fixes
-/ecc:build-fix          # Fix build errors quickly
-/ecc:refactor-clean     # Clean up code
+/sp-ecc:build-fix          # Fix build errors quickly
+/sp-ecc:refactor-clean     # Clean up code
 
 # Testing
-/ecc:test-coverage      # Check test coverage
-/ecc:e2e                # Generate E2E tests
+/sp-ecc:test-coverage      # Check test coverage
+/sp-ecc:e2e                # Generate E2E tests
 
 # Code quality
-/ecc:update-docs        # Sync code and docs
-/ecc:verify             # Pre-commit verification
+/sp-ecc:update-docs        # Sync code and docs
+/sp-ecc:verify             # Pre-commit verification
 
 # Development
-/ecc:go-test            # Go-specific testing
-/ecc:python-review      # Python code review
+/sp-ecc:go-test            # Go-specific testing
+/sp-ecc:python-review      # Python code review
 
 # Workflows
-/ecc:multi-plan         # Multi-agent planning
-/ecc:multi-execute      # Multi-agent execution
+/sp-ecc:multi-plan         # Multi-agent planning
+/sp-ecc:multi-execute      # Multi-agent execution
 ```
 
 **When to Use**:
@@ -190,9 +182,9 @@ superpowers:extract-patterns
 
 **TDD Workflow Enhanced**:
 ```
-New in superpower-ecc v1.0:
-  ├─> Coverage tracking (uses /ecc:test-coverage)
-  ├─> E2E test generation (uses /ecc:e2e)
+New in sp-ecc v1.0:
+  ├─> Coverage tracking (uses /sp-ecc:test-coverage)
+  ├─> E2E test generation (uses /sp-ecc:e2e)
   └─> Same TDD cycle (Red-Green-Refactor)
 
 Still works exactly as before, with optional enhancements
@@ -225,7 +217,7 @@ Still works exactly as before, with optional enhancements
 ### Hooks System (New)
 
 **6 Hook Types**:
-1. PreToolUse - Before tool execution (git write blocker here)
+1. PreToolUse - Before tool execution (destructive git blocker here)
 2. PostToolUse - After tool execution
 3. SessionStart - At session start
 4. SessionEnd - At session end (evaluation hook here)
@@ -237,7 +229,7 @@ Still works exactly as before, with optional enhancements
 **Scripts**: `scripts/hooks/*.js`
 
 **Example Hooks**:
-- Git write blocker (security)
+- Destructive git blocker (safety)
 - Session evaluation (learning)
 - TypeScript checking (quality)
 - Console.log warnings (quality)
@@ -255,9 +247,9 @@ cd ~/.claude/plugins/cache/claude-plugins-official/superpowers/4.2.0
 tar -czf ~/superpowers-4.2-backup.tar.gz .
 ```
 
-**Step 2: Install superpower-ecc v1.0**
+**Step 2: Install sp-ecc v1.0**
 ```bash
-# Claude Code will automatically download superpower-ecc v1.0
+# Claude Code will automatically download sp-ecc v1.0
 # when you invoke a Superpowers skill
 ```
 
@@ -279,7 +271,7 @@ npm install  # Requires Node.js 24.13.0+
 **Step 5: Explore New Features**
 ```
 # Try a quick command
-/ecc:test-coverage
+/sp-ecc:test-coverage
 
 # Try an agent
 @build-error-resolver
@@ -293,8 +285,8 @@ docs/integration/USAGE.md
 # If auto-features are too proactive:
 docs/integration/OPT-OUT.md
 
-# If git write blocker interferes:
-# Review your workflow - you may be relying on AI git writes
+# If destructive git blocker interferes:
+# Review your workflow - you may be relying on destructive git operations
 # Consider: Is manual git control actually better?
 ```
 
@@ -302,24 +294,24 @@ docs/integration/OPT-OUT.md
 
 **If You're Using Everything Claude Code**:
 
-superpower-ecc v1.0 is a "best of both worlds" integration. You get:
-- ECC's quick tools (/ecc:commands and agents)
+sp-ecc v1.0 is a "best of both worlds" integration. You get:
+- ECC's quick tools (/sp-ecc:commands and agents)
 - Superpowers' systematic workflows
 - Both can be used independently
 
 **What's Different**:
 1. **Git Policy**: Read-only for AI (ECC allowed writes)
-2. **Naming**: /ecc: prefix on commands (was /command-name)
+2. **Naming**: /sp-ecc: prefix on commands (was /command-name)
 3. **Hooks**: Merged configuration (may have different matchers)
 4. **Contexts**: Now "mode skills" invoked BY workflows (not standalone)
 5. **Workflows**: Superpowers workflows are primary (ECC multi-* as alternatives)
 
 **Migration**:
 ```
-ECC Usage -> superpower-ecc v1.0 Equivalent
+ECC Usage -> sp-ecc v1.0 Equivalent
 
-/build-fix -> /ecc:build-fix
-/test-coverage -> /ecc:test-coverage
+/build-fix -> /sp-ecc:build-fix
+/test-coverage -> /sp-ecc:test-coverage
 @agent-name -> Still works (agent-name or @agent-name)
 contexts/research -> superpowers-research-mode (invoked by brainstorming)
 continuous-learning-v2 -> superpowers:extract-patterns (auto-invoked)
@@ -336,7 +328,7 @@ Git operations -> Must do manually now (safety)
 
 **Disadvantages**:
 - More ceremony for simple tasks (but quick tools available)
-- Git write restriction (but safer)
+- Destructive git operations blocked (but safer)
 - Learning curve for workflows (but documentation is comprehensive)
 
 ### From Scratch (New User)
@@ -357,8 +349,8 @@ Week 1: Layer 1 Workflows
   └─> superpowers:test-driven-development
 
 Week 2: Layer 3 Quick Tools
-  └─> /ecc:build-fix
-  └─> /ecc:test-coverage
+  └─> /sp-ecc:build-fix
+  └─> /sp-ecc:test-coverage
   └─> @build-error-resolver
 
 Week 3: Advanced Workflows
@@ -376,32 +368,34 @@ Week 4: Language-Specific
 
 ## Common Migration Issues
 
-### Issue 1: "Git write operation blocked"
+### Issue 1: "Destructive git operation blocked"
 
 **Symptoms**:
 ```
-ERROR: Git write operation blocked by security policy.
-Detected: git commit
+[Hook] BLOCKED: Destructive git operation detected
+[Hook] Reason: Force push (rewrites remote history)
 ```
 
-**Cause**: AI attempted git write operation (new restriction in superpower-ecc v1.0).
+**Cause**: AI attempted a destructive git operation (force push, reset --hard, rebase, etc.).
 
-**Solution**: Execute git command manually.
+**Solution**: Use a non-destructive alternative.
 ```bash
-# AI suggests: "Ready to commit with message 'feat: add feature'"
-# You run:
-git commit -m "feat: add feature"
+# Instead of: git push --force
+# Use: git push (normal push)
+
+# Instead of: git reset --hard
+# Use: git stash (to save changes) or git checkout <file> (to restore specific files)
 ```
 
-**Why This Happens**: superpower-ecc v1.0 enforces read-only git for AI. You control history.
+**Why This Happens**: sp-ecc blocks only destructive operations for safety. Normal git operations work fine.
 
-**Disable** (not recommended): See OPT-OUT.md for disabling git write blocker.
+**Disable** (not recommended): See OPT-OUT.md for disabling the destructive git blocker.
 
 ### Issue 2: E2E tests suggested unexpectedly
 
 **Symptoms**: After unit tests pass, AI suggests E2E tests.
 
-**Cause**: TDD workflow enhanced with E2E generation in superpower-ecc v1.0.
+**Cause**: TDD workflow enhanced with E2E generation in sp-ecc v1.0.
 
 **Solution Option 1** (embrace it):
 ```
@@ -420,11 +414,11 @@ Comment out lines 225-244 (E2E Test Generation section)
 
 **Symptoms**: After finishing development, AI extracts patterns to instinct memory.
 
-**Cause**: `superpowers:finishing-a-development-branch` auto-invokes pattern extraction in superpower-ecc v1.0.
+**Cause**: `superpowers:finishing-a-development-branch` auto-invokes pattern extraction in sp-ecc v1.0.
 
 **Solution Option 1** (embrace it):
 ```
-Let it run -> Review extracted patterns -> Export with /ecc:instinct-export
+Let it run -> Review extracted patterns -> Export with /sp-ecc:instinct-export
 ```
 
 **Solution Option 2** (opt-out):
@@ -455,7 +449,7 @@ Want review mode? -> Use superpowers:requesting-code-review
 
 **Symptoms**: Looking for old workflow, can't find it.
 
-**Cause**: All v4.x workflows still exist in superpower-ecc v1.0, naming unchanged.
+**Cause**: All v4.x workflows still exist in sp-ecc v1.0, naming unchanged.
 
 **Solution**: Same names, same invocations.
 ```
@@ -491,25 +485,24 @@ node --version
 
 **Optional**: npm dependencies are only for linting (optional). Superpowers works without them.
 
-### Issue 7: Custom skills/commands use git writes
+### Issue 7: Custom skills/commands use destructive git operations
 
-**Symptoms**: Your custom skill/command tries to commit, gets blocked.
+**Symptoms**: Your custom skill/command tries to force push or hard reset, gets blocked.
 
-**Cause**: Git write blocker applies to all AI operations, including custom skills.
+**Cause**: Destructive git blocker applies to all AI operations, including custom skills.
 
-**Solution Option 1** (recommended): Update custom skill to guide user instead.
+**Solution Option 1** (recommended): Update custom skill to use non-destructive alternatives.
 ```markdown
 # Before:
-"After implementation, commit the changes with git commit -m 'feat: feature'"
+"Force push to override remote: git push --force"
 
 # After:
-"After implementation, ready to commit. Suggested message: 'feat: feature'"
-"User should run: git commit -m 'feat: feature'"
+"Push changes: git push"
 ```
 
-**Solution Option 2** (not recommended): Disable git write blocker (see OPT-OUT.md).
+**Solution Option 2** (not recommended): Disable destructive git blocker (see OPT-OUT.md).
 
-**Why**: All AI operations should be read-only for git (security and control).
+**Why**: Destructive operations can cause irreversible damage. Normal git operations are always allowed.
 
 ### Issue 8: Hooks interfering with workflow
 
@@ -536,16 +529,16 @@ node --version
 
 **v4.x Workflows**: 100% compatible, unchanged
 **v4.x Skills**: 100% compatible, unchanged
-**Custom Skills**: Compatible if no git writes (update if needed)
-**Custom Commands**: Compatible if no git writes (update if needed)
+**Custom Skills**: Compatible (destructive git ops will be blocked)
+**Custom Commands**: Compatible (destructive git ops will be blocked)
 
-**Breaking**: Only git write operations (security policy)
+**Breaking**: Only destructive git operations blocked (safety policy)
 
 ### Forward Compatibility
 
 **v5.x Features**: Will be maintained in v6.x+ (semantic versioning)
 **Layer Architecture**: Foundational design, will persist
-**Naming Conventions**: Stable (superpowers:, /ecc:, agent-)
+**Naming Conventions**: Stable (superpowers:, /sp-ecc:, agent-)
 **Hooks System**: May expand, will remain compatible
 
 ### Platform Compatibility
@@ -561,7 +554,7 @@ node --version
 ### Token Usage
 
 **v4.2**: Baseline
-**superpower-ecc v1.0**: ~25% more tokens initially
+**sp-ecc v1.0**: ~25% more tokens initially
 
 **Why More Tokens**:
 - More skills loaded (Ruby/Rails, Dart/Flutter)
@@ -591,12 +584,12 @@ node --version
 
 ## Rollback Procedure
 
-**If superpower-ecc v1.0 Doesn't Work for You**:
+**If sp-ecc v1.0 Doesn't Work for You**:
 
 **Step 1: Identify Issue**
 ```
 # What's not working?
-# - Git write blocker too restrictive?
+# - Destructive git blocker too restrictive?
 # - Auto-features too proactive?
 # - Workflows different?
 
@@ -608,7 +601,7 @@ node --version
 
 **Step 2: Rollback to v4.2** (if needed)
 ```bash
-# Remove superpower-ecc v1.0 cache
+# Remove sp-ecc v1.0 cache
 rm -rf ~/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.0
 
 # Restore v4.2 from backup (if you made one)
@@ -620,7 +613,7 @@ tar -xzf ~/superpowers-4.2-backup.tar.gz -C 4.2.0/
 
 **Step 3: Report Issue**
 ```
-# Help improve superpower-ecc v1.0:
+# Help improve sp-ecc v1.0:
 # https://github.com/obra/superpowers/issues
 
 # Include:
@@ -646,20 +639,15 @@ superpowers:brainstorming
 
 **Layer 3 tools**: Use for quick fixes and focused tasks.
 
-### 2. Let AI Guide, You Execute (Git)
+### 2. Normal Git Operations Work
 
-**New Pattern**:
+**Pattern**:
 ```
-AI: "Ready to commit. Suggested message:"
-AI: "  feat: add user authentication"
-AI: ""
-AI: "Run: git commit -m 'feat: add user authentication'"
-
-You: [Review suggestion]
-You: git commit -m "feat: add user authentication"
+AI commits code, pushes branches, creates PRs as part of workflows.
+Destructive operations (force push, hard reset, rebase) are blocked.
 ```
 
-**Why**: You maintain control over history. AI guides, you approve.
+**Why**: Productive workflows with safety guardrails.
 
 ### 3. Use Git Worktrees for Features
 
@@ -688,7 +676,7 @@ superpowers:finishing-a-development-branch
 
 **Export Periodically**:
 ```
-/ecc:instinct-export
+/sp-ecc:instinct-export
 # Backs up patterns to file
 ```
 
@@ -736,17 +724,17 @@ Example: "I have a bug" -> "Quick fix or investigation?"
 
 No. Layer 1 workflows work exactly as before. Layer 3 tools are optional shortcuts.
 
-### Can I disable git write blocker?
+### Can I disable destructive git blocker?
 
-Yes, but not recommended. See OPT-OUT.md. Consider: Is manual git control actually better?
+Yes, but not recommended. See OPT-OUT.md. The blocker only prevents destructive operations.
 
 ### Will v4.x workflows be maintained?
 
-Yes. Layer 1 workflows are foundational. superpower-ecc v1.0 enhanced them, not replaced them.
+Yes. Layer 1 workflows are foundational. sp-ecc v1.0 enhanced them, not replaced them.
 
 ### Can I use ECC and Superpowers separately?
 
-No. superpower-ecc v1.0 is an integration. ECC features are now part of Superpowers as Layer 3.
+No. sp-ecc v1.0 is an integration. ECC features are now part of Superpowers as Layer 3.
 
 ### What if I only want quick tools (Layer 3)?
 
@@ -774,9 +762,9 @@ Yes. See ARCHITECTURE.md "Extension Points" section. Follow patterns from existi
 
 Disable it (see OPT-OUT.md). Report issue on GitHub so we can fix it.
 
-### Is superpower-ecc v1.0 stable for production?
+### Is sp-ecc v1.0 stable for production?
 
-Yes. Extensively tested. Git write blocker makes it safer than v4.x for production.
+Yes. Extensively tested. Destructive git blocker makes it safer than v4.x for production.
 
 ### How do I get help?
 
@@ -787,16 +775,16 @@ Yes. Extensively tested. Git write blocker makes it safer than v4.x for producti
 
 ## Changelog Highlights
 
-**superpower-ecc v1.0.0 (2026-02-06)**:
+**sp-ecc v1.0.0 (2026-02-06)**:
 
 **Added**:
-- 26 quick commands (/ecc:*)
+- 26 quick commands (/sp-ecc:*)
 - 13 specialist agents (agent-*)
 - 3 mode skills (superpowers-*-mode)
 - Pattern extraction (superpowers:extract-patterns)
 - Ruby/Rails support (4 skills, Rails Engines focus)
 - Dart/Flutter support (4 skills, state management focus)
-- Hooks system (6 hook types, git write blocker)
+- Hooks system (6 hook types, destructive git blocker, co-author stripping)
 - Comprehensive documentation (USAGE, ARCHITECTURE, OPT-OUT, RUBY-RAILS, DART-FLUTTER, MIGRATION)
 
 **Enhanced**:
@@ -808,9 +796,9 @@ Yes. Extensively tested. Git write blocker makes it safer than v4.x for producti
 - Some features auto-invoke (opt-out available)
 
 **Security**:
-- Git write blocker (PreToolUse hook)
-- All agents have git policy
-- All commands stripped of git writes
+- Destructive git blocker (PreToolUse hook)
+- Co-author stripping (PreToolUse hook)
+- All agents have git safety guidelines
 
 **See Also**:
 - Full changelog: CHANGELOG.md (if exists)
@@ -823,8 +811,8 @@ Yes. Extensively tested. Git write blocker makes it safer than v4.x for producti
 1. **Verify Everything Works**
    ```
    Try your most-used workflow
-   Confirm git write blocker works (try git commit from AI)
-   Test a quick command (/ecc:test-coverage)
+   Confirm destructive git blocker works (try git push --force from AI)
+   Test a quick command (/sp-ecc:test-coverage)
    ```
 
 2. **Explore New Features**
@@ -873,7 +861,7 @@ Yes. Extensively tested. Git write blocker makes it safer than v4.x for producti
 **Quick Help**:
 - Stuck? Read USAGE.md decision trees
 - Feature too proactive? Read OPT-OUT.md
-- Git blocked? Read "Git Write Operations Blocked" section above
+- Git blocked? Read "Destructive Git Operations Blocked" section above
 - Language-specific? Read RUBY-RAILS.md or DART-FLUTTER.md
 
 ---

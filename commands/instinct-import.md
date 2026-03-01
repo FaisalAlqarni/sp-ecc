@@ -29,9 +29,9 @@ Import instincts from:
 ## Usage
 
 ```
-/ecc:instinct-import team-instincts.yaml
-/ecc:instinct-import https://github.com/org/repo/instincts.yaml
-/ecc:instinct-import --from-skill-creator acme/webapp
+/sp-ecc:instinct-import team-instincts.yaml
+/sp-ecc:instinct-import https://github.com/org/repo/instincts.yaml
+/sp-ecc:instinct-import --from-skill-creator acme/webapp
 ```
 
 ## What to Do
@@ -110,7 +110,7 @@ original_source: "session-observation"  # or "repo-analysis"
 When importing from Skill Creator:
 
 ```
-/ecc:instinct-import --from-skill-creator acme/webapp
+/sp-ecc:instinct-import --from-skill-creator acme/webapp
 ```
 
 This fetches instincts generated from repo analysis:
@@ -138,5 +138,5 @@ Skipped: 3 instincts (2 duplicates, 1 conflict)
 
 New instincts saved to: ~/.claude/homunculus/instincts/inherited/
 
-Run /ecc:instinct-status to see all instincts.
+Run /sp-ecc:instinct-status to see all instincts.
 ```

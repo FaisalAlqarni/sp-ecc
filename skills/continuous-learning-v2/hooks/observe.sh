@@ -4,32 +4,18 @@
 # Captures tool use events for pattern analysis.
 # Claude Code passes hook data via stdin as JSON.
 #
-# Hook config (in ~/.claude/settings.json):
+# Hook config (in hooks.json):
 #
 # If installed as a plugin, use ${CLAUDE_PLUGIN_ROOT}:
 # {
 #   "hooks": {
 #     "PreToolUse": [{
 #       "matcher": "*",
-#       "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre" }]
+#       "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh", "async": true, "timeout": 5 }]
 #     }],
 #     "PostToolUse": [{
 #       "matcher": "*",
-#       "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post" }]
-#     }]
-#   }
-# }
-#
-# If installed manually to ~/.claude/skills:
-# {
-#   "hooks": {
-#     "PreToolUse": [{
-#       "matcher": "*",
-#       "hooks": [{ "type": "command", "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh pre" }]
-#     }],
-#     "PostToolUse": [{
-#       "matcher": "*",
-#       "hooks": [{ "type": "command", "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh post" }]
+#       "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh", "async": true, "timeout": 5 }]
 #     }]
 #   }
 # }
@@ -48,7 +34,8 @@ if [ -f "$CONFIG_DIR/disabled" ]; then
   exit 0
 fi
 
-# Read JSON from stdin (Claude Code hook format)
+# Read JSON from stdin (Claude Code hook format) into a variable
+# Then pipe it to Python — avoids shell variable interpolation bugs
 INPUT_JSON=$(cat)
 
 # Exit if no input
@@ -56,13 +43,14 @@ if [ -z "$INPUT_JSON" ]; then
   exit 0
 fi
 
-# Parse using python (more reliable than jq for complex JSON)
-PARSED=$(python3 << EOF
+# Parse using python — pipe stdin instead of shell variable interpolation
+# This avoids breaking on JSON containing single quotes, backslashes, etc.
+PARSED=$(echo "$INPUT_JSON" | python3 -c "
 import json
 import sys
 
 try:
-    data = json.loads('''$INPUT_JSON''')
+    data = json.load(sys.stdin)
 
     # Extract fields - Claude Code hook format
     hook_type = data.get('hook_type', 'unknown')  # PreToolUse or PostToolUse
@@ -95,8 +83,7 @@ try:
     }))
 except Exception as e:
     print(json.dumps({'parsed': False, 'error': str(e)}))
-EOF
-)
+")
 
 # Check if parsing succeeded
 PARSED_OK=$(echo "$PARSED" | python3 -c "import json,sys; print(json.load(sys.stdin).get('parsed', False))")
@@ -104,7 +91,11 @@ PARSED_OK=$(echo "$PARSED" | python3 -c "import json,sys; print(json.load(sys.st
 if [ "$PARSED_OK" != "True" ]; then
   # Fallback: log raw input for debugging
   timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  echo "{\"timestamp\":\"$timestamp\",\"event\":\"parse_error\",\"raw\":$(echo "$INPUT_JSON" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()[:1000]))')}" >> "$OBSERVATIONS_FILE"
+  echo "$INPUT_JSON" | python3 -c "
+import json, sys
+raw = sys.stdin.read()[:1000]
+print(json.dumps({'timestamp': '$timestamp', 'event': 'parse_error', 'raw': raw}))
+" >> "$OBSERVATIONS_FILE"
   exit 0
 fi
 
@@ -118,13 +109,13 @@ if [ -f "$OBSERVATIONS_FILE" ]; then
   fi
 fi
 
-# Build and write observation
+# Build and write observation — pipe parsed JSON to Python
 timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-python3 << EOF
-import json
+echo "$PARSED" | python3 -c "
+import json, sys
 
-parsed = json.loads('''$PARSED''')
+parsed = json.load(sys.stdin)
 observation = {
     'timestamp': '$timestamp',
     'event': parsed['event'],
@@ -132,14 +123,14 @@ observation = {
     'session': parsed['session']
 }
 
-if parsed['input']:
+if parsed.get('input'):
     observation['input'] = parsed['input']
-if parsed['output']:
+if parsed.get('output'):
     observation['output'] = parsed['output']
 
 with open('$OBSERVATIONS_FILE', 'a') as f:
     f.write(json.dumps(observation) + '\n')
-EOF
+"
 
 # Signal observer if running
 OBSERVER_PID_FILE="${CONFIG_DIR}/.observer.pid"

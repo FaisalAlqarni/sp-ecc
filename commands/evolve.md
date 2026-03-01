@@ -28,10 +28,10 @@ Analyzes instincts and clusters related ones into higher-level structures:
 ## Usage
 
 ```
-/ecc:evolve                    # Analyze all instincts and suggest evolutions
-/ecc:evolve --domain testing   # Only evolve instincts in testing domain
-/ecc:evolve --dry-run          # Show what would be created without creating
-/ecc:evolve --threshold 5      # Require 5+ related instincts to cluster
+/sp-ecc:evolve                    # Analyze all instincts and suggest evolutions
+/sp-ecc:evolve --domain testing   # Only evolve instincts in testing domain
+/sp-ecc:evolve --dry-run          # Show what would be created without creating
+/sp-ecc:evolve --threshold 5      # Require 5+ related instincts to cluster
 ```
 
 ## Evolution Rules
@@ -102,7 +102,7 @@ Instincts: new-table-migration, update-schema, regenerate-types
 Type: Command
 Confidence: 85% (based on 12 observations)
 
-Would create: /ecc:new-table command
+Would create: /sp-ecc:new-table command
 Files:
   - ~/.claude/homunculus/evolved/commands/new-table.md
 
@@ -125,7 +125,7 @@ Files:
   - ~/.claude/homunculus/evolved/agents/debugger.md
 
 ---
-Run `/ecc:evolve --execute` to create these files.
+Run `/sp-ecc:evolve --execute` to create these files.
 ```
 
 ## Flags

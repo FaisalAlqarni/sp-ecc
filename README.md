@@ -1,4 +1,4 @@
-# Superpower-ECC
+# SP-ECC
 
 **An integration project combining [Superpowers](https://github.com/obra/superpowers) by Jesse Vincent and [Everything Claude Code](https://github.com/affaan-m/everything-claude-code) by Affaan Mustafa.**
 
@@ -24,7 +24,7 @@ This project merges the systematic workflows from Superpowers with the battle-te
 - Dart/Flutter with **state management decision matrices** (added in this integration)
 - Python/Django, Go, Java/Spring Boot (from both projects)
 
-**Git Safety** (from ECC): AI operations are read-only. You control commits, pushes, and history.
+**Git Safety** (from ECC): Destructive git operations (force push, reset --hard, rebase) are blocked. Normal operations allowed.
 
 **Opt-Out-Able** (integrated): All auto-features can be disabled. See `docs/integration/OPT-OUT.md`.
 
@@ -42,8 +42,8 @@ Next up, once you say "go", it launches a *subagent-driven-development* process,
 
 **For Quick Tasks** (Layer 3 Tools):
 
-Need to fix a build error? `/ecc:build-fix`
-Want test coverage? `/ecc:test-coverage`
+Need to fix a build error? `/sp-ecc:build-fix`
+Want test coverage? `/sp-ecc:test-coverage`
 Security audit needed? `@security-auditor`
 
 Quick, focused, no ceremony. Use when you know exactly what you need.
@@ -72,10 +72,10 @@ In Claude Code, run these two commands:
 
 ```bash
 # 1. Register the marketplace
-/plugin marketplace add FaisalAlqarni/superpower-ecc
+/plugin marketplace add FaisalAlqarni/sp-ecc
 
 # 2. Install the plugin
-/plugin install superpower-ecc@superpower-ecc
+/plugin install sp-ecc@sp-ecc
 ```
 
 That's it! The plugin will be installed automatically.
@@ -86,8 +86,8 @@ If you prefer manual installation:
 
 **1. Clone the repository:**
 ```bash
-git clone https://github.com/FaisalAlqarni/superpower-ecc
-cd superpower-ecc
+git clone https://github.com/FaisalAlqarni/sp-ecc
+cd sp-ecc
 ```
 
 **2. Install dependencies (optional, for linting):**
@@ -99,12 +99,12 @@ npm install
 
 **Windows:**
 ```bash
-mklink /D "%USERPROFILE%\.claude\plugins\superpower-ecc" "D:\path\to\superpower-ecc"
+mklink /D "%USERPROFILE%\.claude\plugins\sp-ecc" "D:\path\to\sp-ecc"
 ```
 
 **macOS/Linux:**
 ```bash
-ln -s /path/to/superpower-ecc ~/.claude/plugins/superpower-ecc
+ln -s /path/to/sp-ecc ~/.claude/plugins/sp-ecc
 ```
 
 **4. Restart Claude Code**
@@ -113,19 +113,19 @@ ln -s /path/to/superpower-ecc ~/.claude/plugins/superpower-ecc
 
 Start a new Claude Code session and try:
 - Ask: "help me plan this feature" → Should trigger `superpowers:brainstorming`
-- Type: `/ecc:test-coverage` → Should show the command
+- Type: `/sp-ecc:test-coverage` → Should show the command
 - Use: `@build-error-resolver` → Should load the agent
 
 ### Updating
 
 **If installed via marketplace:**
 ```bash
-/plugin update superpower-ecc
+/plugin update sp-ecc
 ```
 
 **If installed manually:**
 ```bash
-cd /path/to/superpower-ecc
+cd /path/to/sp-ecc
 git pull
 ```
 
@@ -166,14 +166,14 @@ For the individual source projects:
 
 ## Layer 3: Quick Tools
 
-**Commands** (`/ecc:*`):
+**Commands** (`/sp-ecc:*`):
 ```
-/ecc:build-fix          Fix build errors
-/ecc:test-coverage      Check test coverage
-/ecc:e2e                Generate E2E tests
-/ecc:refactor-clean     Clean up code
-/ecc:update-docs        Sync code and docs
-/ecc:verify             Pre-commit verification
+/sp-ecc:build-fix          Fix build errors
+/sp-ecc:test-coverage      Check test coverage
+/sp-ecc:e2e                Generate E2E tests
+/sp-ecc:refactor-clean     Clean up code
+/sp-ecc:update-docs        Sync code and docs
+/sp-ecc:verify             Pre-commit verification
 ... 20 more commands
 ```
 
@@ -227,7 +227,7 @@ code-reviewer               Code review
 
 ### Layer 3: Quick Tools
 
-**26 Commands** (`/ecc:*`): Build fixes, testing, code quality, development workflows
+**26 Commands** (`/sp-ecc:*`): Build fixes, testing, code quality, development workflows
 
 **13 Agents** (`agent-*`): Build errors, test failures, security, performance, code review, refactoring, documentation, API design, database, deployment
 
@@ -262,7 +262,7 @@ code-reviewer               Code review
 **6 Hook Types:** PreToolUse, PostToolUse, SessionStart, SessionEnd, PreCompact, Stop
 
 **Key Hooks:**
-- **Git write blocker** - Enforces read-only git operations (security)
+- **Destructive git blocker** - Blocks force push, reset --hard, rebase, clean -f (safety)
 - **Session evaluation** - Learn from completed sessions
 - **TypeScript checking** - Type safety validation
 - **Console.log warnings** - Code quality
@@ -276,7 +276,7 @@ code-reviewer               Code review
 - **Systematic over ad-hoc** - Process over guessing
 - **Complexity reduction** - Simplicity as primary goal
 - **Evidence over claims** - Verify before declaring success
-- **User control** - AI guides, user executes (especially git operations)
+- **User control** - Destructive git operations blocked, normal operations allowed
 - **Opt-out-able** - All auto-features can be disabled
 
 Read more: [Superpowers for Claude Code](https://blog.fsck.com/2025/10/09/superpowers/)
@@ -311,7 +311,7 @@ See `skills/writing-skills/SKILL.md` for the complete guide.
 Pull the latest changes from this repository:
 
 ```bash
-cd path/to/superpower-ecc
+cd path/to/sp-ecc
 git pull origin main
 ```
 
@@ -328,8 +328,8 @@ MIT License - see LICENSE file for details
 ## Support
 
 **This Project:**
-- Repository: https://github.com/FaisalAlqarni/superpower-ecc
-- Issues: https://github.com/FaisalAlqarni/superpower-ecc/issues
+- Repository: https://github.com/FaisalAlqarni/sp-ecc
+- Issues: https://github.com/FaisalAlqarni/sp-ecc/issues
 
 **Original Projects:**
 - Superpowers v4.1.1: https://github.com/obra/superpowers

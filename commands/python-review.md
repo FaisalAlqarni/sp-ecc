@@ -17,7 +17,7 @@ This command invokes the **python-reviewer** agent for comprehensive Python-spec
 
 ## When to Use
 
-Use `/ecc:python-review` when:
+Use `/sp-ecc:python-review` when:
 - After writing or modifying Python code
 - Before committing Python changes
 - Reviewing pull requests with Python code
@@ -77,7 +77,7 @@ pytest --cov=app --cov-report=term-missing
 ## Example Usage
 
 ```text
-User: /ecc:python-review
+User: /sp-ecc:python-review
 
 Agent:
 # Python Code Review Report
@@ -171,10 +171,10 @@ Run: `black app/routes/user.py app/services/auth.py`
 
 ## Integration with Other Commands
 
-- Use `/ecc:python-test` first to ensure tests pass
-- Use `/ecc:code-review` for non-Python specific concerns
-- Use `/ecc:python-review` before committing
-- Use `/ecc:build-fix` if static analysis tools fail
+- Use `/sp-ecc:python-test` first to ensure tests pass
+- Use `/sp-ecc:code-review` for non-Python specific concerns
+- Use `/sp-ecc:python-review` before committing
+- Use `/sp-ecc:build-fix` if static analysis tools fail
 
 ## Framework-Specific Reviews
 

@@ -4,20 +4,22 @@
  *
  * Cross-platform (Windows, macOS, Linux)
  *
- * Runs on Stop hook to extract reusable patterns from Claude Code sessions
+ * Runs on SessionEnd to evaluate sessions for extractable patterns.
+ * Enhanced to check for observations and summarize instinct state.
  *
- * Why Stop hook instead of UserPromptSubmit:
- * - Stop runs once at session end (lightweight)
- * - UserPromptSubmit runs every message (heavy, adds latency)
+ * The hook signals that patterns are available — actual extraction
+ * happens via /sp-ecc:learn or the extract-patterns skill.
  */
 
 const path = require('path');
 const fs = require('fs');
 const {
+  getHomeDir,
   getLearnedSkillsDir,
   ensureDir,
   readFile,
   countInFile,
+  findFiles,
   log
 } = require('../lib/utils');
 
@@ -68,6 +70,31 @@ async function main() {
   // Signal to Claude that session should be evaluated for extractable patterns
   log(`[ContinuousLearning] Session has ${messageCount} messages - evaluate for extractable patterns`);
   log(`[ContinuousLearning] Save learned skills to: ${learnedSkillsPath}`);
+
+  // Check for observations from this session
+  const homeDir = getHomeDir();
+  const observationsFile = path.join(homeDir, '.claude', 'homunculus', 'observations.jsonl');
+
+  if (fs.existsSync(observationsFile)) {
+    try {
+      const content = readFile(observationsFile);
+      if (content) {
+        const lines = content.trim().split('\n').filter(Boolean);
+        log(`[ContinuousLearning] ${lines.length} observation(s) captured`);
+      }
+    } catch {
+      // Ignore read errors
+    }
+  }
+
+  // Summarize instinct state
+  const instinctsDir = path.join(homeDir, '.claude', 'homunculus', 'instincts', 'personal');
+  if (fs.existsSync(instinctsDir)) {
+    const instinctFiles = findFiles(instinctsDir, '*.yaml');
+    if (instinctFiles.length > 0) {
+      log(`[ContinuousLearning] ${instinctFiles.length} instinct(s) available`);
+    }
+  }
 
   process.exit(0);
 }

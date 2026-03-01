@@ -4,13 +4,13 @@ Create or verify a checkpoint in your workflow.
 
 ## Usage
 
-`/ecc:checkpoint [create|verify|list] [name]`
+`/sp-ecc:checkpoint [create|verify|list] [name]`
 
 ## Create Checkpoint
 
 When creating a checkpoint:
 
-1. Run `/ecc:verify quick` to ensure current state is clean
+1. Run `/sp-ecc:verify quick` to ensure current state is clean
 2. Log checkpoint to `.claude/checkpoints.log`:
 
 ```bash
@@ -53,15 +53,15 @@ Show all checkpoints with:
 Typical checkpoint flow:
 
 ```
-[Start] --> /ecc:checkpoint create "feature-start"
+[Start] --> /sp-ecc:checkpoint create "feature-start"
    |
-[Implement] --> /ecc:checkpoint create "core-done"
+[Implement] --> /sp-ecc:checkpoint create "core-done"
    |
-[Test] --> /ecc:checkpoint verify "core-done"
+[Test] --> /sp-ecc:checkpoint verify "core-done"
    |
-[Refactor] --> /ecc:checkpoint create "refactor-done"
+[Refactor] --> /sp-ecc:checkpoint create "refactor-done"
    |
-[PR] --> /ecc:checkpoint verify "feature-start"
+[PR] --> /sp-ecc:checkpoint verify "feature-start"
 ```
 
 ## Arguments

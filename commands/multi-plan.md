@@ -46,7 +46,7 @@ EOF",
 | Analysis | `~/.claude/.ccg/prompts/codex/analyzer.md` | `~/.claude/.ccg/prompts/gemini/analyzer.md` |
 | Planning | `~/.claude/.ccg/prompts/codex/architect.md` | `~/.claude/.ccg/prompts/gemini/architect.md` |
 
-**Session Reuse**: Each call returns `SESSION_ID: xxx` (typically output by wrapper), **MUST save** for subsequent `/ecc:execute` use.
+**Session Reuse**: Each call returns `SESSION_ID: xxx` (typically output by wrapper), **MUST save** for subsequent `/sp-ecc:execute` use.
 
 **Wait for Background Tasks** (max timeout 600000ms = 10 minutes):
 
@@ -183,14 +183,14 @@ Synthesize both analyses, generate **Step-by-step Implementation Plan**:
 | Risk | Mitigation |
 |------|------------|
 
-### SESSION_ID (for /ecc:execute use)
+### SESSION_ID (for /sp-ecc:execute use)
 - CODEX_SESSION: <session_id>
 - GEMINI_SESSION: <session_id>
 ```
 
 ### Phase 2 End: Plan Delivery (Not Execution)
 
-**`/ecc:plan` responsibilities end here, MUST execute the following actions**:
+**`/sp-ecc:plan` responsibilities end here, MUST execute the following actions**:
 
 1. Present complete implementation plan to user (including pseudo-code)
 2. Save plan to `.claude/plan/<feature-name>.md` (extract feature name from requirement, e.g., `user-auth`, `payment-module`)
@@ -204,7 +204,7 @@ Synthesize both analyses, generate **Step-by-step Implementation Plan**:
    - **Execute plan**: Copy the following command to a new session
 
    ```
-   /ecc:execute .claude/plan/actual-feature-name.md
+   /sp-ecc:execute .claude/plan/actual-feature-name.md
    ```
    ---
 
@@ -213,9 +213,9 @@ Synthesize both analyses, generate **Step-by-step Implementation Plan**:
 4. **Immediately terminate current response** (Stop here. No more tool calls.)
 
 **ABSOLUTELY FORBIDDEN**:
-- Ask user "Y/N" then auto-execute (execution is `/ecc:execute`'s responsibility)
+- Ask user "Y/N" then auto-execute (execution is `/sp-ecc:execute`'s responsibility)
 - Any write operations to production code
-- Automatically call `/ecc:execute` or any implementation actions
+- Automatically call `/sp-ecc:execute` or any implementation actions
 - Continue triggering model calls when user hasn't explicitly requested modifications
 
 ---
@@ -247,7 +247,7 @@ If user requests plan modifications:
 After user approves, **manually** execute:
 
 ```bash
-/ecc:execute .claude/plan/<feature-name>.md
+/sp-ecc:execute .claude/plan/<feature-name>.md
 ```
 
 ---
@@ -258,4 +258,4 @@ After user approves, **manually** execute:
 2. **No Y/N prompts** – Only present plan, let user decide next steps
 3. **Trust Rules** – Backend follows Codex, Frontend follows Gemini
 4. External models have **zero filesystem write access**
-5. **SESSION_ID Handoff** – Plan must include `CODEX_SESSION` / `GEMINI_SESSION` at end (for `/ecc:execute resume <SESSION_ID>` use)
+5. **SESSION_ID Handoff** – Plan must include `CODEX_SESSION` / `GEMINI_SESSION` at end (for `/sp-ecc:execute resume <SESSION_ID>` use)

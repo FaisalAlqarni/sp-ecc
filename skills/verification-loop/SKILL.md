@@ -1,3 +1,8 @@
+---
+name: verification-loop
+description: Use when verifying implementation correctness - provides a systematic loop for checking tests, lint, build, and runtime behavior
+---
+
 # Verification Loop Skill
 
 A comprehensive verification system for Claude Code sessions.

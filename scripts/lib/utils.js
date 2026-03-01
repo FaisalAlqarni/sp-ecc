@@ -354,7 +354,13 @@ function countInFile(filePath, pattern) {
   const content = readFile(filePath);
   if (content === null) return 0;
 
-  const regex = pattern instanceof RegExp ? pattern : new RegExp(pattern, 'g');
+  let regex;
+  if (pattern instanceof RegExp) {
+    // Ensure the global flag is set for counting
+    regex = pattern.global ? pattern : new RegExp(pattern.source, pattern.flags + 'g');
+  } else {
+    regex = new RegExp(pattern, 'g');
+  }
   const matches = content.match(regex);
   return matches ? matches.length : 0;
 }

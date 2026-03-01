@@ -12,7 +12,7 @@ Superpower-ECC (an integration of Superpowers and Everything Claude Code) includ
 
 ### What It Does
 
-When using the `test-driven-development` skill for user-facing features (UI components, API endpoints), Claude suggests generating end-to-end tests with `/ecc:e2e`.
+When using the `test-driven-development` skill for user-facing features (UI components, API endpoints), Claude suggests generating end-to-end tests with `/sp-ecc:e2e`.
 
 **Trigger:** Implementing user-facing features in TDD workflow
 
@@ -20,7 +20,7 @@ When using the `test-driven-development` skill for user-facing features (UI comp
 ```
 "This is a user-facing feature. Would you like to generate E2E tests?"
 
-If yes: /ecc:e2e
+If yes: /sp-ecc:e2e
 If no: Continue with unit tests only
 ```
 
@@ -50,7 +50,7 @@ For user-facing features (UI, API endpoints), consider E2E tests.
 ```
 "This is a user-facing feature. Would you like to generate E2E tests?"
 
-If yes: /ecc:e2e
+If yes: /sp-ecc:e2e
 If no: Continue with unit tests only
 ```
 
@@ -72,7 +72,7 @@ Continue with unit and integration tests only.
 
 ### Verification
 
-After disabling, the TDD skill will no longer suggest `/ecc:e2e` for user-facing features.
+After disabling, the TDD skill will no longer suggest `/sp-ecc:e2e` for user-facing features.
 
 ---
 
@@ -149,7 +149,7 @@ When completing work with `finishing-a-development-branch`, Claude automatically
 - Saves patterns to instinct system
 - Builds institutional knowledge over time
 
-**Backed by:** `/ecc:learn` (continuous-learning-v2 system)
+**Backed by:** `/sp-ecc:learn` (continuous-learning-v2 system)
 
 ### Why You Might Disable It
 
@@ -194,7 +194,7 @@ Learn from this session:
 
 You can still extract patterns manually anytime:
 ```
-/ecc:learn
+/sp-ecc:learn
 ```
 
 Or invoke the skill directly:
@@ -221,7 +221,7 @@ The `hooks/hooks.json` file defines automatic behaviors triggered by specific ev
 
 **SessionEnd hooks:**
 - Persist session state
-- Evaluate session for extractable patterns
+- Evaluate session for extractable patterns (enhanced: summarizes observations and instincts)
 
 **PreCompact hooks:**
 - Save state before context compaction
@@ -237,9 +237,15 @@ The `hooks/hooks.json` file defines automatic behaviors triggered by specific ev
 - TypeScript type checking
 - Warn about console.log statements
 - Log PR URLs after creation
+- Capture tool observations for learning pipeline (async)
 
 **Stop hooks:**
 - Check for console.log in modified files
+
+**Observation hooks (new in v1.1):**
+- PreToolUse and PostToolUse each have an async observation hook that captures tool usage to `~/.claude/homunculus/observations.jsonl`
+- These run asynchronously with a 5-second timeout, adding zero latency to tool execution
+- Disable by creating `~/.claude/homunculus/disabled` file, or remove the observation hooks from hooks.json
 
 ### Why You Might Disable Specific Hooks
 
@@ -286,74 +292,61 @@ The `hooks/hooks.json` file defines automatic behaviors triggered by specific ev
 
 **Or:** Remove the entire hook object and adjust the JSON array structure
 
-#### Disable Git Write Blocking
+#### Disable Destructive Git Blocking
 
-**Find (lines 4-14):**
+**Find the destructive git blocking hook in hooks.json:**
 ```json
 {
-  "matcher": "tool == \"Bash\" && tool_input.command matches \"git (push|commit|add|reset|checkout|branch|merge|rebase|pull|fetch|clone|init|remote)\"",
+  "matcher": "tool == \"Bash\" && tool_input.command matches \"git (push.*-(-force|f)|reset.*--hard|clean.*-f|branch.*-D|checkout.*-- \\\\.|rebase)\"",
   "hooks": [
     {
       "type": "command",
-      "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/block-git-writes.js\""
+      "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-node.sh\" \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/block-destructive-git.js\""
     }
   ],
-  "description": "Block git write operations - CRITICAL for v5.0.0 safety"
+  "description": "Block destructive git operations (force push, hard reset, rebase, etc.)"
 }
 ```
 
-**WARNING:** This is a safety feature. Only disable if you're confident Claude won't make unwanted git changes.
+**WARNING:** This is a safety feature that blocks destructive git operations (force push, hard reset, rebase, etc.). Normal operations like commit, push, and add are allowed. Only disable if you're confident Claude won't make unwanted destructive changes.
 
-**To disable, comment out:**
-```json
-// DISABLED: Git write blocking (USE WITH CAUTION)
-// {
-//   "matcher": "tool == \"Bash\" && tool_input.command matches \"git (push|commit|add|reset|checkout|branch|merge|rebase|pull|fetch|clone|init|remote)\"",
-//   "hooks": [
-//     {
-//       "type": "command",
-//       "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/block-git-writes.js\""
-//     }
-//   ],
-//   "description": "Block git write operations (DISABLED)"
-// }
-```
+**To disable, remove the hook entry from hooks.json**
 
 #### Disable TypeScript Type Checking After Edits
 
-**Find (lines 135-143):**
+**Find in hooks.json:**
 ```json
 {
   "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.(ts|tsx)$\"",
   "hooks": [
     {
       "type": "command",
-      "command": "node -e \"const{execSync}=require('child_process');const fs=require('fs');const path=require('path');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const p=i.tool_input?.file_path;if(p&&fs.existsSync(p)){let dir=path.dirname(p);while(dir!==path.dirname(dir)&&!fs.existsSync(path.join(dir,'tsconfig.json'))){dir=path.dirname(dir)}if(fs.existsSync(path.join(dir,'tsconfig.json'))){try{const r=execSync('npx tsc --noEmit --pretty false 2>&1',{cwd:dir,encoding:'utf8',stdio:['pipe','pipe','pipe']});const lines=r.split('\\n').filter(l=>l.includes(p)).slice(0,10);if(lines.length)console.error(lines.join('\\n'))}catch(e){const lines=(e.stdout||'').split('\\n').filter(l=>l.includes(p)).slice(0,10);if(lines.length)console.error(lines.join('\\n'))}}}console.log(d)})\""
+      "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-node.sh\" \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/typescript-check.js\""
     }
   ],
   "description": "TypeScript check after editing .ts/.tsx files"
 }
 ```
 
-**Comment out or remove to disable**
+**Remove the hook entry to disable**
 
 #### Disable console.log Warnings
 
-**Find (lines 145-153):**
+**Find in hooks.json:**
 ```json
 {
   "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.(ts|tsx|js|jsx)$\"",
   "hooks": [
     {
       "type": "command",
-      "command": "node -e \"const fs=require('fs');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const p=i.tool_input?.file_path;if(p&&fs.existsSync(p)){const c=fs.readFileSync(p,'utf8');const lines=c.split('\\n');const matches=[];lines.forEach((l,idx)=>{if(/console\\.log/.test(l))matches.push((idx+1)+': '+l.trim())});if(matches.length){console.error('[Hook] WARNING: console.log found in '+p);matches.slice(0,5).forEach(m=>console.error(m));console.error('[Hook] Remove console.log before committing')}}console.log(d)})\""
+      "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-node.sh\" \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/warn-console-log.js\""
     }
   ],
   "description": "Warn about console.log statements after edits"
 }
 ```
 
-**Comment out or remove to disable**
+**Remove the hook entry to disable**
 
 ### JSON Syntax Note
 
@@ -475,7 +468,7 @@ Want to disable everything? Here's the checklist:
 - [ ] **Doc sync:** Edit `skills/finishing-a-development-branch/SKILL.md` (if present)
 - [ ] **Pattern extraction:** Edit `skills/finishing-a-development-branch/SKILL.md` (if present)
 - [ ] **SessionEnd pattern evaluation:** Edit `hooks/hooks.json` (lines 178-188)
-- [ ] **Git write blocking:** Edit `hooks/hooks.json` (lines 4-14) - USE CAUTION
+- [ ] **Destructive git blocking:** Edit `hooks/hooks.json` - USE CAUTION
 - [ ] **TypeScript checks:** Edit `hooks/hooks.json` (lines 135-143)
 - [ ] **console.log warnings:** Edit `hooks/hooks.json` (lines 145-153)
 - [ ] **Mode auto-invocations:** Search and edit workflow skill files

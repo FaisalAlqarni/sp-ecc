@@ -5,7 +5,7 @@ Frontend-focused workflow (Research → Ideation → Plan → Execute → Optimi
 ## Usage
 
 ```bash
-/ecc:frontend <UI task description>
+/sp-ecc:frontend <UI task description>
 ```
 
 ## Context

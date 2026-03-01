@@ -5,7 +5,7 @@ Backend-focused workflow (Research → Ideation → Plan → Execute → Optimiz
 ## Usage
 
 ```bash
-/ecc:backend <backend task description>
+/sp-ecc:backend <backend task description>
 ```
 
 ## Context

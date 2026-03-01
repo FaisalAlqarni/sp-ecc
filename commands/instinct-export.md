@@ -14,10 +14,10 @@ Exports instincts to a shareable format. Perfect for:
 ## Usage
 
 ```
-/ecc:instinct-export                           # Export all personal instincts
-/ecc:instinct-export --domain testing          # Export only testing instincts
-/ecc:instinct-export --min-confidence 0.7      # Only export high-confidence instincts
-/ecc:instinct-export --output team-instincts.yaml
+/sp-ecc:instinct-export                           # Export all personal instincts
+/sp-ecc:instinct-export --domain testing          # Export only testing instincts
+/sp-ecc:instinct-export --min-confidence 0.7      # Only export high-confidence instincts
+/sp-ecc:instinct-export --output team-instincts.yaml
 ```
 
 ## What to Do

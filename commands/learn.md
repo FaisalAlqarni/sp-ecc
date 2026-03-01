@@ -1,10 +1,10 @@
-# /ecc:learn - Extract Reusable Patterns
+# /sp-ecc:learn - Extract Reusable Patterns
 
 Analyze the current session and extract any patterns worth saving as skills.
 
 ## Trigger
 
-Run `/ecc:learn` at any point during a session when you've solved a non-trivial problem.
+Run `/sp-ecc:learn` at any point during a session when you've solved a non-trivial problem.
 
 ## What to Extract
 

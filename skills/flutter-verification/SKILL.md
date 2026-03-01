@@ -1,3 +1,8 @@
+---
+name: flutter-verification
+description: Use when verifying Flutter applications - covers widget tests, integration tests, golden tests, performance testing, and build validation
+---
+
 # Flutter Verification and Testing
 
 Comprehensive Flutter verification patterns covering widget tests, integration tests, golden tests, performance testing, platform verification, accessibility, build validation, asset verification, localization coverage, and code quality checks.

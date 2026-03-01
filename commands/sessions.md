@@ -13,11 +13,11 @@ Manage Claude Code session history - list, load, alias, and edit sessions stored
 Display all sessions with metadata, filtering, and pagination.
 
 ```bash
-/ecc:sessions                              # List all sessions (default)
-/ecc:sessions list                         # Same as above
-/ecc:sessions list --limit 10              # Show 10 sessions
-/ecc:sessions list --date 2026-02-01       # Filter by date
-/ecc:sessions list --search abc            # Search by session ID
+/sp-ecc:sessions                              # List all sessions (default)
+/sp-ecc:sessions list                         # Same as above
+/sp-ecc:sessions list --limit 10              # Show 10 sessions
+/sp-ecc:sessions list --date 2026-02-01       # Filter by date
+/sp-ecc:sessions list --search abc            # Search by session ID
 ```
 
 **Script:**
@@ -53,10 +53,10 @@ for (const s of result.sessions) {
 Load and display a session's content (by ID or alias).
 
 ```bash
-/ecc:sessions load <id|alias>             # Load session
-/ecc:sessions load 2026-02-01             # By date (for no-id sessions)
-/ecc:sessions load a1b2c3d4               # By short ID
-/ecc:sessions load my-alias               # By alias name
+/sp-ecc:sessions load <id|alias>             # Load session
+/sp-ecc:sessions load 2026-02-01             # By date (for no-id sessions)
+/sp-ecc:sessions load a1b2c3d4               # By short ID
+/sp-ecc:sessions load my-alias               # By alias name
 ```
 
 **Script:**
@@ -116,8 +116,8 @@ if (session.metadata.lastUpdated) {
 Create a memorable alias for a session.
 
 ```bash
-/ecc:sessions alias <id> <name>           # Create alias
-/ecc:sessions alias 2026-02-01 today-work # Create alias named "today-work"
+/sp-ecc:sessions alias <id> <name>           # Create alias
+/sp-ecc:sessions alias 2026-02-01 today-work # Create alias named "today-work"
 ```
 
 **Script:**
@@ -130,7 +130,7 @@ const sessionId = process.argv[1];
 const aliasName = process.argv[2];
 
 if (!sessionId || !aliasName) {
-  console.log('Usage: /ecc:sessions alias <id> <name>');
+  console.log('Usage: /sp-ecc:sessions alias <id> <name>');
   process.exit(1);
 }
 
@@ -156,8 +156,8 @@ if (result.success) {
 Delete an existing alias.
 
 ```bash
-/ecc:sessions alias --remove <name>        # Remove alias
-/ecc:sessions unalias <name>               # Same as above
+/sp-ecc:sessions alias --remove <name>        # Remove alias
+/sp-ecc:sessions unalias <name>               # Same as above
 ```
 
 **Script:**
@@ -167,7 +167,7 @@ const aa = require('./scripts/lib/session-aliases');
 
 const aliasName = process.argv[1];
 if (!aliasName) {
-  console.log('Usage: /ecc:sessions alias --remove <name>');
+  console.log('Usage: /sp-ecc:sessions alias --remove <name>');
   process.exit(1);
 }
 
@@ -186,7 +186,7 @@ if (result.success) {
 Show detailed information about a session.
 
 ```bash
-/ecc:sessions info <id|alias>              # Show session details
+/sp-ecc:sessions info <id|alias>              # Show session details
 ```
 
 **Script:**
@@ -233,7 +233,7 @@ if (aliases.length > 0) {
 Show all session aliases.
 
 ```bash
-/ecc:sessions aliases                      # List all aliases
+/sp-ecc:sessions aliases                      # List all aliases
 ```
 
 **Script:**
@@ -279,22 +279,22 @@ $ARGUMENTS:
 
 ```bash
 # List all sessions
-/ecc:sessions list
+/sp-ecc:sessions list
 
 # Create an alias for today's session
-/ecc:sessions alias 2026-02-01 today
+/sp-ecc:sessions alias 2026-02-01 today
 
 # Load session by alias
-/ecc:sessions load today
+/sp-ecc:sessions load today
 
 # Show session info
-/ecc:sessions info today
+/sp-ecc:sessions info today
 
 # Remove alias
-/ecc:sessions alias --remove today
+/sp-ecc:sessions alias --remove today
 
 # List all aliases
-/ecc:sessions aliases
+/sp-ecc:sessions aliases
 ```
 
 ## Notes

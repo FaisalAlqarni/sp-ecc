@@ -1,3 +1,8 @@
+---
+name: dart-patterns
+description: Use when writing Dart code - provides idiomatic patterns for null safety, async programming, collections, and error handling
+---
+
 # Dart Patterns
 
 ## Description

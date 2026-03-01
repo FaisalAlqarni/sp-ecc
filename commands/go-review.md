@@ -17,7 +17,7 @@ This command invokes the **go-reviewer** agent for comprehensive Go-specific cod
 
 ## When to Use
 
-Use `/ecc:go-review` when:
+Use `/sp-ecc:go-review` when:
 - After writing or modifying Go code
 - Before committing Go changes
 - Reviewing pull requests with Go code
@@ -69,7 +69,7 @@ govulncheck ./...
 ## Example Usage
 
 ```text
-User: /ecc:go-review
+User: /sp-ecc:go-review
 
 Agent:
 # Go Code Review Report
@@ -137,10 +137,10 @@ Recommendation: ❌ Block merge until CRITICAL issue is fixed
 
 ## Integration with Other Commands
 
-- Use `/ecc:go-test` first to ensure tests pass
-- Use `/ecc:go-build` if build errors occur
-- Use `/ecc:go-review` before committing
-- Use `/ecc:code-review` for non-Go specific concerns
+- Use `/sp-ecc:go-test` first to ensure tests pass
+- Use `/sp-ecc:go-build` if build errors occur
+- Use `/sp-ecc:go-review` before committing
+- Use `/sp-ecc:code-review` for non-Go specific concerns
 
 ## Related
 
