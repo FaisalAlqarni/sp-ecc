@@ -37,6 +37,7 @@ Review checklist:
 - Input validation implemented
 - Good test coverage
 - Performance considerations addressed
+- Logging follows wide events pattern (invoke logging-reviewer agent if logging code was modified)
 - Time complexity of algorithms analyzed
 - Licenses of integrated libraries checked
 

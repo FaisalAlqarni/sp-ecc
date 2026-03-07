@@ -127,6 +127,16 @@
           }
         ],
         "description": "Warn about console.log statements after edits"
+      },
+      {
+        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.(rb|cs|ts|tsx|js|jsx|py)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/run-node.sh\" \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/warn-scattered-logs.js\""
+          }
+        ],
+        "description": "Warn about scattered log statements after edits — nudge to use wide events"
       }
     ],
     "Stop": [

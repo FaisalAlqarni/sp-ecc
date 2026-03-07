@@ -18,16 +18,21 @@ Execute verification in this exact order:
    - Run linter
    - Report warnings and errors
 
-4. **Test Suite**
+4. **Logging Check**
+   - Run logging-reviewer agent in audit-only mode
+   - Report violations but don't block the verify pipeline
+   - Informational, not gating
+
+5. **Test Suite**
    - Run all tests
    - Report pass/fail count
    - Report coverage percentage
 
-5. **Console.log Audit**
+6. **Console.log Audit**
    - Search for console.log in source files
    - Report locations
 
-6. **Git Status**
+7. **Git Status**
    - Show uncommitted changes
    - Show files modified since last commit
 
@@ -43,6 +48,7 @@ Types:    [OK/X errors]
 Lint:     [OK/X issues]
 Tests:    [X/Y passed, Z% coverage]
 Secrets:  [OK/X found]
+Logging:  [OK/X violations]
 Logs:     [OK/X console.logs]
 
 Ready for PR: [YES/NO]
