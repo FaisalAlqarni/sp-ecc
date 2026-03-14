@@ -5,11 +5,11 @@
 Superpower-ECC is an integration project combining:
 - **[Superpowers v4.1.1](https://github.com/obra/superpowers)** by Jesse Vincent - Systematic workflow discipline
 - **[Everything Claude Code v1.4.1](https://github.com/affaan-m/everything-claude-code)** by Affaan Mustafa - Battle-tested production tools
-- **Integration** by Faisal Alqarni - Combined into three-layer architecture
+- **Integration** by Faisal Alqarni - Combined into a two-layer architecture
 
 Repository: https://github.com/FaisalAlqarni/sp-ecc
 
-The architecture is designed around three distinct layers that work together while maintaining clear boundaries.
+The architecture is designed around two distinct layers that work together while maintaining clear boundaries.
 
 **Design Principles:**
 - **Workflow First**: Systematic workflows guide the overall process
@@ -25,29 +25,19 @@ The architecture is designed around three distinct layers that work together whi
 │ Layer 1: Superpowers Systematic Workflows                   │
 │ (Primary: Use for structured development)                   │
 ├─────────────────────────────────────────────────────────────┤
-│ superpowers:brainstorming                                   │
-│ superpowers:writing-plans                                   │
-│ superpowers:executing-plans                                 │
-│ superpowers:subagent-driven-development                     │
-│ superpowers:test-driven-development (enhanced)              │
-│ superpowers:systematic-debugging                            │
-│ superpowers:requesting-code-review                          │
-│ superpowers:finishing-a-development-branch                  │
-│ superpowers:using-git-worktrees                             │
+│ sp-ecc:brainstorming                                   │
+│ sp-ecc:writing-plans                                   │
+│ sp-ecc:executing-plans                                 │
+│ sp-ecc:subagent-driven-development                     │
+│ sp-ecc:test-driven-development (enhanced)              │
+│ sp-ecc:systematic-debugging                            │
+│ sp-ecc:requesting-code-review                          │
+│ sp-ecc:finishing-a-development-branch                  │
+│ sp-ecc:using-git-worktrees                             │
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
-│ Layer 2: ECC Enhancements (Merged into Layer 1)            │
-│ (Invoked BY workflows, not as workflow replacement)         │
-├─────────────────────────────────────────────────────────────┤
-│ superpowers:extract-patterns (auto-invoked by finishing)   │
-│ superpowers-research-mode (invoked by brainstorming)       │
-│ superpowers-review-mode (invoked by code-review)           │
-│ superpowers-dev-mode (invoked by executing-plans)          │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│ Layer 3: ECC Standalone Tools                              │
+│ Layer 2: Standalone Tools                                  │
 │ (Optional: Use when workflow is overkill)                   │
 ├─────────────────────────────────────────────────────────────┤
 │ Commands: /sp-ecc:build-fix, /sp-ecc:refactor-clean, etc. │
@@ -55,7 +45,7 @@ The architecture is designed around three distinct layers that work together whi
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Layer 1: Superpowers Systematic Workflows
+### Layer 1: Systematic Workflows
 
 **Purpose**: Comprehensive, repeatable processes for software development.
 
@@ -66,82 +56,31 @@ The architecture is designed around three distinct layers that work together whi
 - Use when: You want structure, repeatability, and quality assurance
 
 **Core Workflows**:
-1. **superpowers:brainstorming** → **superpowers:writing-plans** → **superpowers:executing-plans**
+1. **sp-ecc:brainstorming** → **sp-ecc:writing-plans** → **sp-ecc:executing-plans**
    - Idea to implementation pipeline
    - Creates design docs and implementation plans
    - Executes task-by-task with checkpoints
 
-2. **superpowers:test-driven-development**
+2. **sp-ecc:test-driven-development**
    - Red-Green-Refactor cycle enforcement
    - Enhanced with coverage tracking and E2E generation
    - Used within executing-plans and subagent-driven-development
 
-3. **superpowers:systematic-debugging**
+3. **sp-ecc:systematic-debugging**
    - Structured problem investigation
    - Hypothesis testing with experiments
    - Used when quick fixes fail
 
-4. **superpowers:finishing-a-development-branch**
+4. **sp-ecc:finishing-a-development-branch**
    - Pre-merge checklist (tests, docs, cleanup)
    - Auto-invokes pattern extraction
    - Creates PR or prepares for merge
 
 **Enhancement Integration**:
-- Layer 2 mode skills (research-mode, review-mode, dev-mode) are invoked BY Layer 1 workflows
-- Layer 3 commands can be used within workflows when appropriate
-- Pattern extraction auto-runs at workflow completion
+- Layer 2 commands and agents can be used within workflows when appropriate
+- Pattern extraction (extract-patterns skill) is optionally invoked by finishing-a-development-branch
 
-### Layer 2: ECC Enhancements
-
-**Purpose**: Behavioral modifiers that enhance Layer 1 workflows without replacing them.
-
-**Key Characteristics**:
-- Not standalone workflows - invoked BY Layer 1
-- Modify Claude's behavior and focus
-- Provide specialized context and guidelines
-- Use when: Layer 1 workflow needs specialized behavior
-
-**Mode Skills**:
-
-1. **superpowers-research-mode**
-   - Invoked by: brainstorming, systematic-debugging
-   - Behavior: Deep codebase exploration, exhaustive search
-   - When: Understanding existing architecture or investigating complex issues
-
-2. **superpowers-review-mode**
-   - Invoked by: requesting-code-review
-   - Behavior: Critical analysis, security focus, nitpicking
-   - When: Code review checkpoint
-
-3. **superpowers-dev-mode**
-   - Invoked by: executing-plans, subagent-driven-development
-   - Behavior: Implementation focus, TDD enforcement
-   - When: Writing code task-by-task
-
-**Pattern Extraction**:
-
-**superpowers:extract-patterns** (wrapper for continuous-learning-v2)
-- Auto-invoked by: finishing-a-development-branch
-- Behavior: Extract learned patterns to instinct memory
-- When: After completing feature or fix
-- Opt-out: See docs/integration/OPT-OUT.md
-
-**Integration Points**:
-```
-brainstorming skill
-  └─> Invokes superpowers-research-mode for codebase exploration
-
-executing-plans skill
-  └─> Invokes superpowers-dev-mode for implementation tasks
-
-requesting-code-review skill
-  └─> Invokes superpowers-review-mode for review focus
-
-finishing-a-development-branch skill
-  └─> Auto-invokes superpowers:extract-patterns for learning
-```
-
-### Layer 3: ECC Standalone Tools
+### Layer 2: Standalone Tools
 
 **Purpose**: Quick, focused tools for specific tasks when workflow overhead is unnecessary.
 
@@ -181,20 +120,15 @@ digraph skill_interaction {
     "User Request" -> "brainstorming";
     "brainstorming" -> "using-git-worktrees";
     "brainstorming" -> "writing-plans";
-    "brainstorming" -> "superpowers-research-mode" [style=dashed, label="invokes"];
 
     "writing-plans" -> "executing-plans";
     "writing-plans" -> "subagent-driven-development";
 
     "executing-plans" -> "test-driven-development";
-    "executing-plans" -> "superpowers-dev-mode" [style=dashed, label="invokes"];
     "executing-plans" -> "systematic-debugging";
 
     "subagent-driven-development" -> "test-driven-development";
     "subagent-driven-development" -> "requesting-code-review";
-    "subagent-driven-development" -> "superpowers-dev-mode" [style=dashed, label="invokes"];
-
-    "requesting-code-review" -> "superpowers-review-mode" [style=dashed, label="invokes"];
 
     "test-driven-development" -> "/sp-ecc:test-coverage" [style=dotted, label="uses"];
     "test-driven-development" -> "/sp-ecc:e2e" [style=dotted, label="uses"];
@@ -204,7 +138,6 @@ digraph skill_interaction {
 
     "finishing-a-development-branch" -> "extract-patterns" [style=dashed, label="auto-invokes"];
 
-    "systematic-debugging" -> "superpowers-research-mode" [style=dashed, label="invokes"];
     "systematic-debugging" -> "agent-*" [style=dotted, label="may escalate to"];
 }
 ```
@@ -264,6 +197,84 @@ Need quality gates?
 Just need quick analysis/suggestion?
   └─> Yes: Use /sp-ecc:command
 ```
+
+## Brainstorm-to-Merge Pipeline
+
+The brainstorm-to-merge pipeline provides a fully automated path from initial idea through to a merge-ready PR. It is invoked via `/sp-ecc:brainstorm` and orchestrates design, workspace setup, implementation, multi-stage review, and finalization.
+
+> **Design doc**: `docs/plans/2026-03-14-pipeline-redesign.md`
+
+### Pipeline Flow
+
+```
+/sp-ecc:brainstorm
+  └─> Interactive design session (iterative brainstorming)
+      └─> Design completion decision (4 options)
+          └─> Workspace setup (worktree or branch)
+              └─> Per-task implementation loop
+                  └─> After-all-tasks stages
+                      └─> Merge / PR
+```
+
+### Design Completion Options
+
+After the brainstorming phase produces a design, the user is presented with four options:
+
+1. **Ready** -- Accept the design and proceed to implementation.
+2. **Revise** -- Continue iterating on the design before proceeding.
+3. **Save & exit** -- Persist the current design for later resumption.
+4. **Discard & start fresh** -- Throw away the design and restart brainstorming.
+
+### Workspace Setup
+
+Once the design is accepted, the pipeline sets up an isolated workspace. Two strategies are supported:
+
+- **Worktree** (recommended) -- Creates a git worktree for full isolation from the main working tree. Uses `sp-ecc:using-git-worktrees`.
+- **Direct branch** -- Creates and checks out a new branch in the current working tree. Simpler but shares the working directory.
+
+### Multi-Stage Per-Task Review
+
+Each task in the implementation plan passes through a series of review stages before the next task begins. The token budget is approximately **12-14K tokens per task**.
+
+```
+Task N implementation
+  └─> spec review        (does the code match the task specification?)
+  └─> quality review     (code quality, patterns, maintainability)
+  └─> security review    (always runs -- vulnerability and exposure check)
+  └─> verification gate  (conditional -- runs for tasks involving logging or database changes)
+```
+
+- **spec**: Validates the implementation against the task specification.
+- **quality**: Checks code style, patterns, duplication, and maintainability.
+- **security**: Always executes. Scans for vulnerabilities, credential exposure, injection risks.
+- **verification gate**: Conditionally executes when the task touches logging or database layers. Validates log levels, query safety, migration correctness, etc.
+
+### After-All-Tasks Stages
+
+Once every task has been implemented and reviewed, a set of one-time finalization stages runs. The token budget for these stages is approximately **16K tokens (one-time)**.
+
+```
+All tasks complete
+  └─> e2e-runner          (end-to-end test execution)
+  └─> doc-updater         (update documentation to reflect changes)
+  └─> verification-loop   (iterative fix cycle until all checks pass)
+  └─> final code review   (comprehensive review of the full changeset)
+  └─> refactor-cleaner    (remove dead code, simplify, polish)
+  └─> Merge / PR creation
+```
+
+- **e2e-runner**: Executes end-to-end tests across the full changeset.
+- **doc-updater**: Ensures documentation (READMEs, inline docs, API docs) reflects the changes.
+- **verification-loop**: Iterates on any remaining failures until all tests and checks pass.
+- **final code review**: A comprehensive review of the entire branch diff, not just individual tasks.
+- **refactor-cleaner**: Final cleanup pass -- removes dead code, simplifies overly complex sections, and polishes naming.
+
+### Token Budget Summary
+
+| Phase | Budget |
+|-------|--------|
+| Per task (spec + quality + security + conditional verification) | ~12-14K tokens |
+| After all tasks (e2e + docs + verification + review + refactor) | ~16K tokens (one-time) |
 
 ## Git Safety Enforcement
 
@@ -403,39 +414,17 @@ See `docs/integration/OPT-OUT.md` for disabling:
 
 ### Layer 1: Superpowers Workflows
 ```
-Format: superpowers:<workflow-name>
+Format: sp-ecc:<workflow-name>
 Examples:
-  - superpowers:brainstorming
-  - superpowers:test-driven-development
-  - superpowers:executing-plans
+  - sp-ecc:brainstorming
+  - sp-ecc:test-driven-development
+  - sp-ecc:executing-plans
 
 Invocation: Automatic by Claude based on task
 File Location: skills/<workflow-name>/SKILL.md
 ```
 
-### Layer 2: Mode Skills
-```
-Format: superpowers-<mode-name>-mode
-Examples:
-  - superpowers-research-mode
-  - superpowers-review-mode
-  - superpowers-dev-mode
-
-Invocation: BY Layer 1 workflows (not user-invocable)
-File Location: skills/contexts/<mode-name>/SKILL.md
-```
-
-### Layer 2: Pattern Extraction
-```
-Format: superpowers:<tool-name>
-Example:
-  - superpowers:extract-patterns
-
-Invocation: Auto-invoked by finishing-a-development-branch
-File Location: skills/superpowers/<tool-name>/SKILL.md
-```
-
-### Layer 3: Commands
+### Layer 2: Commands
 ```
 Format: /sp-ecc:<command-name>
 Examples:
@@ -448,7 +437,7 @@ File Location: commands/ecc-<command-name>.md
 Internal Reference: ecc-<command-name>
 ```
 
-### Layer 3: Agents
+### Layer 2: Agents
 ```
 Format: agent-<specialty>
 Examples:
@@ -474,12 +463,10 @@ File Location: skills/<language>-<aspect>/SKILL.md
 ```
 
 **Why These Names**:
-- **superpowers:**: Signals primary workflow system
-- **superpowers-*-mode**: Signals behavioral modifier
-- **/sp-ecc:**: Signals quick tool (Everything Claude Code origin)
+- **sp-ecc:**: Signals workflow or skill from this plugin
+- **/sp-ecc:**: Signals quick command
 - **agent-**: Signals specialist entity
 - Clear namespace separation prevents conflicts
-- Consistent with existing Superpowers conventions
 
 ## Language & Framework Skills
 
@@ -512,12 +499,12 @@ File Location: skills/<language>-<aspect>/SKILL.md
 
 ```
 superpowers/
-├── agents/                    # Layer 3: Specialist agents
+├── agents/                    # Layer 2: Specialist agents
 │   ├── build-error-resolver.md
 │   ├── test-failure-analyzer.md
 │   └── ... (13 total)
 │
-├── commands/                  # Layer 3: Quick commands
+├── commands/                  # Layer 2: Quick commands
 │   ├── ecc-build-fix.md
 │   ├── ecc-test-coverage.md
 │   └── ... (26 total)
@@ -530,13 +517,7 @@ superpowers/
 │   ├── flutter-patterns/
 │   └── ... (40+ skills)
 │
-├── skills/contexts/           # Layer 2: Mode skills
-│   ├── superpowers-research-mode/
-│   ├── superpowers-review-mode/
-│   └── superpowers-dev-mode/
-│
-├── skills/superpowers/        # Layer 2: Tools
-│   └── extract-patterns/      # Wraps continuous-learning-v2
+├── skills/extract-patterns/    # Pattern extraction (optional, invoked by finishing skill)
 │
 ├── scripts/hooks/             # Hook implementations
 │   ├── block-destructive-git.js # Destructive git blocker
@@ -570,8 +551,7 @@ superpowers/
 
 **Solution**: Layer system that preserves both
 - Layer 1: When you want structure (new features, learning)
-- Layer 2: Enhanced Layer 1 with specialized behaviors
-- Layer 3: When you're experienced and know exactly what you need
+- Layer 2: When you're experienced and know exactly what you need
 
 **Trade-off**: More complexity, but much more flexibility
 
@@ -617,26 +597,11 @@ superpowers/
 
 **Trade-off**: Requires hooks system, but necessary for safety
 
-### 5. Why Mode Skills Instead of Direct Commands?
-
-**Problem**: Modes can conflict with workflows
-- User enters research-mode, forgets to exit
-- Mode persists when inappropriate
-- Hard to track current mode
-
-**Solution**: Modes invoked BY workflows, not standalone
-- brainstorming invokes research-mode
-- executing-plans invokes dev-mode
-- Mode only active during workflow
-
-**Trade-off**: Can't manually enter mode, but safer and clearer
-
 ## Performance Considerations
 
 **Token Usage**:
 - Layer 1 workflows: Higher token usage (comprehensive)
-- Layer 2 enhancements: Moderate additional tokens
-- Layer 3 tools: Lower token usage (focused)
+- Layer 2 tools: Lower token usage (focused)
 
 **Initial Cost (~25% higher with this integration)**:
 - More context loaded (skills, modes, agents)
@@ -650,7 +615,7 @@ superpowers/
 - Worth the cost for production work
 
 **Optimization Tips**:
-- Use Layer 3 for quick tasks (lower token usage)
+- Use Layer 2 for quick tasks (lower token usage)
 - Opt-out of features you don't need
 - Pattern extraction pays off over time
 - Use language skills consistently (AI learns patterns)
@@ -712,7 +677,7 @@ superpowers/
 - Normal git operations are allowed by design
 
 **Best Practices**:
-- Work in git worktrees for feature isolation (superpowers:using-git-worktrees)
+- Work in git worktrees for feature isolation (sp-ecc:using-git-worktrees)
 - Review AI-generated commits before pushing
 - Keep hooks.json configuration under version control
 
@@ -768,20 +733,18 @@ superpowers/
 - Core language skills (Python/Django, Go, Java/Spring Boot)
 
 **Integrated from Everything Claude Code v1.4.1:**
-- 13 specialist agents (Layer 3)
-- 26 quick commands (Layer 3)
+- 13 specialist agents (Layer 2)
+- 26 quick commands (Layer 2)
 - Hooks system (6 hook types)
 - Git write blocker (security)
 - Pattern extraction system
 
-**Added by Faisal Alqarni (integration work):**
-- Three-layer architecture combining both projects
-- 3 mode skills (Layer 2) connecting workflows and tools
+**Integration additions:**
+- Two-layer architecture combining both projects
 - Enhanced TDD with coverage tracking and E2E generation
-- Ruby/Rails language support (4 skills, 1,404 lines on Rails Engines)
-- Dart/Flutter language support (4 skills, 2,022 lines on state management)
-- Comprehensive documentation (USAGE, OPT-OUT, ARCHITECTURE, RUBY-RAILS, DART-FLUTTER, MIGRATION)
-- 200+ integrated files, ~25,000 lines of content
+- Multi-language support (Ruby/Rails, Dart/Flutter, Python/Django, Go, Java/Spring Boot)
+- Comprehensive documentation (USAGE, OPT-OUT, ARCHITECTURE, MIGRATION)
+- Pipeline enforcement with efficiency tiers and recovery paths
 
 **Source Projects:**
 - Superpowers v4.1.1 by Jesse Vincent: https://github.com/obra/superpowers
@@ -797,27 +760,20 @@ superpowers/
 - Additional language support (Rust, Swift, Kotlin)
 - More specialized agents (accessibility-auditor, i18n-validator)
 - Performance profiling commands (/sp-ecc:profile, /sp-ecc:benchmark)
-- Integration testing workflows (superpowers:integration-testing)
+- Integration testing workflows (sp-ecc:integration-testing)
 - Database migration patterns (rails-migrations, django-migrations)
 
 **Known Limitations**:
 - Destructive git operations blocked (by design)
 - Cannot work across multiple worktrees simultaneously
 - Pattern extraction requires manual periodic instinct-export
-- Mode skills cannot be manually invoked (by design)
 - Hooks require Node.js runtime
 
 **Research Questions**:
 - Can pattern extraction reduce token usage over time?
 - What's the optimal balance between auto-features and opt-out?
 - Are there cases where git writes should be allowed?
-- Should mode skills ever be user-invocable?
 
 ---
 
-**Document Version**: 1.0.0
-**Last Updated**: 2026-02-06
-**Project**: Superpower-ECC (integration project)
-**Created by**: Faisal Alqarni
-**Based on**: Superpowers by Jesse Vincent, Everything Claude Code by Affaan Mustafa
 **Related Docs**: USAGE.md, OPT-OUT.md, MIGRATION.md

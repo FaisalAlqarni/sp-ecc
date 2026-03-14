@@ -84,7 +84,7 @@
             "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\""
           }
         ],
-        "description": "Superpowers session initialization (shell-based)"
+        "description": "sp-ecc session initialization (shell-based)"
       },
       {
         "matcher": "*",

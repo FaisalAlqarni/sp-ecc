@@ -1,6 +1,5 @@
 ---
 description: "Audit, plan, and refactor logging code to follow wide events best practices"
-disable-model-invocation: true
 ---
 
 Invoke the **logging-reviewer** agent to audit and improve logging in this codebase.

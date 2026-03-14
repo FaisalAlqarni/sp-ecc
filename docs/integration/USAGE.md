@@ -2,22 +2,22 @@
 
 This guide helps you choose the right tool for the job in Superpower-ECC (an integration of Superpowers by Jesse Vincent and Everything Claude Code by Affaan Mustafa).
 
-## Three-Layer Architecture
+## Two-Layer Architecture
 
-Superpower-ECC integrates three complementary layers:
+Superpower-ECC integrates two complementary layers:
 
-### Layer 1: Superpowers Systematic Workflows
+### Layer 1: Systematic Workflows
 
 **Purpose:** Structured, repeatable processes for complex development tasks
 
 **When to use:** You want guidance through a complete workflow with checkpoints and validation
 
 **Examples:**
-- `superpowers:brainstorming` - Structured feature ideation
-- `superpowers:writing-plans` - Systematic planning with Architecture Decision Records
-- `superpowers:test-driven-development` - Full TDD cycle (red-green-refactor)
-- `superpowers:requesting-code-review` - Prepare code for human review
-- `superpowers:finishing-a-development-branch` - Complete branch workflow with pattern extraction
+- `sp-ecc:brainstorming` - Structured feature ideation
+- `sp-ecc:writing-plans` - Systematic planning with Architecture Decision Records
+- `sp-ecc:test-driven-development` - Full TDD cycle (red-green-refactor)
+- `sp-ecc:requesting-code-review` - Prepare code for human review
+- `sp-ecc:finishing-a-development-branch` - Complete branch workflow with pattern extraction
 
 **Characteristics:**
 - Multi-step guided workflows
@@ -25,25 +25,7 @@ Superpower-ECC integrates three complementary layers:
 - Educational prompts and context
 - Automatic pattern learning on completion
 
-### Layer 2: ECC Enhancements (Auto-Invoked)
-
-**Purpose:** Intelligence baked into Layer 1 workflows
-
-**When invoked:** Automatically called by superpowers workflows
-
-**Examples:**
-- `code-reviewer` agent - Pre-reviews code before human review
-- `security-reviewer` agent - Checks for security issues
-- `tdd-guide` agent - Provides TDD guidance during development
-- `superpowers:extract-patterns` - Extracts learnings when finishing branches
-
-**Characteristics:**
-- Zero user action required
-- Seamlessly integrated
-- Enhance workflow quality
-- Context-aware assistance
-
-### Layer 3: ECC Quick Tools
+### Layer 2: Quick Tools
 
 **Purpose:** Direct access for experienced developers who know what they need
 
@@ -81,11 +63,13 @@ Superpower-ECC integrates three complementary layers:
 
 ```
 Do you have a clear specification?
-├─ NO → Use superpowers:brainstorming
-│       Then: superpowers:writing-plans
+├─ NO → Use sp-ecc:brainstorming (full pipeline)
+│       ├─ Collaborative design → 4 options (Ready/Revise/Save/Discard)
+│       └─ If Ready → sp-ecc:writing-plans → sp-ecc:subagent-driven-development
 │
 └─ YES → Do you want guided ADR creation?
-          ├─ YES → Use superpowers:writing-plans
+          ├─ YES → Use sp-ecc:writing-plans
+          │        Then: sp-ecc:subagent-driven-development
           │
           └─ NO → Do you want autonomous planning?
                   ├─ YES → Use planner agent
@@ -94,8 +78,8 @@ Do you have a clear specification?
 ```
 
 **Examples:**
-- **New feature, unclear requirements:** `superpowers:brainstorming` → `superpowers:writing-plans`
-- **Clear spec, want ADR:** `superpowers:writing-plans`
+- **New feature, unclear requirements:** `sp-ecc:brainstorming` → Ready → `sp-ecc:writing-plans` → `sp-ecc:subagent-driven-development`
+- **Clear spec, want ADR:** `sp-ecc:writing-plans` → `sp-ecc:subagent-driven-development`
 - **Clear spec, want quick plan:** `/sp-ecc:plan`
 - **Let AI handle it:** `planner` agent
 
@@ -103,7 +87,7 @@ Do you have a clear specification?
 
 ```
 What testing approach do you need?
-├─ Full TDD workflow → superpowers:test-driven-development
+├─ Full TDD workflow → sp-ecc:test-driven-development
 │
 ├─ Check coverage gaps → /sp-ecc:test-coverage
 │
@@ -115,7 +99,7 @@ What testing approach do you need?
 ```
 
 **Examples:**
-- **Starting new feature with TDD:** `superpowers:test-driven-development`
+- **Starting new feature with TDD:** `sp-ecc:test-driven-development`
 - **Existing code needs tests:** `/sp-ecc:test-coverage` to identify gaps
 - **Need integration tests:** `/sp-ecc:e2e` to generate scenarios
 - **Want TDD coaching:** `tdd-guide` agent
@@ -125,7 +109,7 @@ What testing approach do you need?
 
 ```
 What stage is your code at?
-├─ Ready for human review → superpowers:requesting-code-review
+├─ Ready for human review → sp-ecc:requesting-code-review
 │   (automatically invokes code-reviewer and security-reviewer agents)
 │
 ├─ Want quick spot check → /sp-ecc:code-review
@@ -136,7 +120,7 @@ What stage is your code at?
 ```
 
 **Examples:**
-- **Preparing PR for team:** `superpowers:requesting-code-review`
+- **Preparing PR for team:** `sp-ecc:requesting-code-review`
 - **Quick self-check during development:** `/sp-ecc:code-review`
 - **Security-focused review:** `security-reviewer` agent
 - **Autonomous pre-commit review:** `code-reviewer` agent
@@ -148,7 +132,7 @@ How complex is the build error?
 ├─ Simple/common error → /sp-ecc:build-fix
 │   (pattern-matching for known issues)
 │
-├─ Complex/unclear error → superpowers:systematic-debugging
+├─ Complex/unclear error → sp-ecc:systematic-debugging
 │   (full diagnostic workflow)
 │
 └─ Language-specific → /sp-ecc:go-build (Go projects)
@@ -156,7 +140,7 @@ How complex is the build error?
 
 **Examples:**
 - **"Cannot find symbol" in Go:** `/sp-ecc:go-build` or `/sp-ecc:build-fix`
-- **Weird interaction between components:** `superpowers:systematic-debugging`
+- **Weird interaction between components:** `sp-ecc:systematic-debugging`
 - **Quick fix attempt:** `/sp-ecc:build-fix`
 
 ### Refactoring Code
@@ -164,8 +148,8 @@ How complex is the build error?
 ```
 What's the scope of refactoring?
 ├─ Major refactoring (architecture changes)
-│   → superpowers:brainstorming → superpowers:writing-plans
-│   → Implement with superpowers:test-driven-development
+│   → sp-ecc:brainstorming → sp-ecc:writing-plans
+│   → Implement with sp-ecc:test-driven-development
 │
 ├─ Remove dead code → /sp-ecc:refactor-clean
 │
@@ -183,8 +167,8 @@ What's the scope of refactoring?
 
 ```
 When do you want to extract patterns?
-├─ Automatically when finishing → superpowers:finishing-a-development-branch
-│   (calls superpowers:extract-patterns automatically)
+├─ Automatically when finishing → sp-ecc:finishing-a-development-branch
+│   (calls sp-ecc:extract-patterns automatically)
 │
 ├─ Manually anytime → /sp-ecc:learn
 │
@@ -196,29 +180,44 @@ When do you want to extract patterns?
 ```
 
 **Examples:**
-- **Finishing a feature branch:** `superpowers:finishing-a-development-branch` (auto-extracts)
+- **Finishing a feature branch:** `sp-ecc:finishing-a-development-branch` (auto-extracts)
 - **Just learned something useful:** `/sp-ecc:learn` to capture it
 - **See what patterns exist:** `/sp-ecc:instinct-status`
 - **Share patterns with team:** `/sp-ecc:instinct-export`
 - **Use team patterns:** `/sp-ecc:instinct-import`
 
-### Multi-Step Workflows
+### Multi-Step Workflows (Brainstorm Pipeline)
 
 ```
-Need to coordinate multiple operations?
-├─ Frontend + Backend changes → /sp-ecc:multi-frontend and /sp-ecc:multi-backend
+Have an idea that needs design + implementation?
 │
-├─ Execute across services → /sp-ecc:multi-execute
-│
-├─ Complex orchestration → /sp-ecc:multi-workflow
-│
-└─ Full planning across services → /sp-ecc:multi-plan
+└─ Use sp-ecc:brainstorming
+   │
+   ├─ Collaborative Q&A to refine the idea
+   ├─ Explore 2-3 approaches with trade-offs
+   ├─ Present design in sections, validate each
+   ├─ Save design doc to docs/plans/
+   │
+   └─ After design, choose:
+      ├─ 1. Ready — proceed to implementation
+      │     ├─ Choose workspace (worktree or new branch)
+      │     ├─ sp-ecc:writing-plans creates implementation plan
+      │     └─ sp-ecc:subagent-driven-development executes the plan
+      │         (fresh subagent per task + multi-stage review)
+      │
+      ├─ 2. Revise — continue brainstorming
+      │
+      ├─ 3. Save & exit — keep design doc, come back later
+      │
+      └─ 4. Discard & start fresh — drop design, new brainstorm
 ```
+
+**The execution path is subagent-driven development:** each task gets a fresh subagent that implements with TDD, followed by spec compliance review, code quality review, security review, and conditional domain reviewers (logging, database). After all tasks complete, the pipeline runs e2e tests, doc updates, a verification loop, final code review, and refactor cleanup before finishing the branch.
 
 **Examples:**
-- **API change affecting frontend:** `/sp-ecc:multi-backend` then `/sp-ecc:multi-frontend`
-- **Update all microservices:** `/sp-ecc:multi-execute`
-- **Coordinate complex release:** `/sp-ecc:multi-workflow`
+- **New feature from scratch:** `sp-ecc:brainstorming` → Ready → `sp-ecc:writing-plans` → `sp-ecc:subagent-driven-development`
+- **Resume a saved design:** `/sp-ecc:write-plan` with existing design doc → `sp-ecc:subagent-driven-development`
+- **Iterate on design:** `sp-ecc:brainstorming` → Revise (loop until satisfied) → Ready
 
 ---
 
@@ -226,10 +225,10 @@ Need to coordinate multiple operations?
 
 | Pattern | Type | Example | Purpose |
 |---------|------|---------|---------|
-| `superpowers:name` | Systematic Workflow | `superpowers:test-driven-development` | Guided multi-step process |
+| `sp-ecc:name` | Systematic Workflow | `sp-ecc:test-driven-development` | Guided multi-step process |
 | `/sp-ecc:name` | Quick Command | `/sp-ecc:build-fix` | Single-purpose tool |
 | `agent-name` | Autonomous Agent | `code-reviewer` | Specialist that works independently |
-| `superpowers:name-mode` | Behavior Modifier | `superpowers:pairing-mode` | Changes how workflows operate |
+| `sp-ecc:name-mode` | Behavior Modifier | `sp-ecc:pairing-mode` | Changes how workflows operate |
 
 ### Invoking Each Type
 
@@ -237,7 +236,7 @@ Need to coordinate multiple operations?
 ```
 # In Claude Code
 > Can you help me with test-driven development?
-# Claude invokes: superpowers:test-driven-development
+# Claude invokes: sp-ecc:test-driven-development
 ```
 
 **Quick Commands:**
@@ -261,7 +260,7 @@ Need to coordinate multiple operations?
 ```
 # In Claude Code
 > Enable pairing mode
-# Claude invokes: superpowers:pairing-mode
+# Claude invokes: sp-ecc:pairing-mode
 ```
 
 ---
@@ -279,11 +278,11 @@ Need to coordinate multiple operations?
 - Learning built into the process
 
 **Start with:**
-1. `superpowers:brainstorming` - Understand the problem space
-2. `superpowers:writing-plans` - Create structured plan with ADRs
-3. `superpowers:test-driven-development` - Implement with TDD
-4. `superpowers:requesting-code-review` - Prepare for review
-5. `superpowers:finishing-a-development-branch` - Complete and learn
+1. `sp-ecc:brainstorming` - Understand the problem space, create design
+2. Choose "Ready" when design is complete
+3. `sp-ecc:writing-plans` - Create structured plan with ADRs
+4. `sp-ecc:subagent-driven-development` - Execute plan (includes TDD, review, security)
+5. `sp-ecc:finishing-a-development-branch` - Complete and learn
 
 **Benefits:**
 - Builds understanding of the codebase
@@ -293,7 +292,7 @@ Need to coordinate multiple operations?
 
 ### If You're an Experienced Developer
 
-**Recommended approach:** Use Layer 3 (Quick Tools) + Layer 2 (Auto-enhancements)
+**Recommended approach:** Use Layer 2 (Quick Tools) for speed
 
 **Why:**
 - Direct access to specific functionality
@@ -303,15 +302,13 @@ Need to coordinate multiple operations?
 
 **Common workflows:**
 1. `/sp-ecc:plan` - Quick planning
-2. `/sp-ecc:test-coverage` - Check test gaps
-3. Implement code
-4. `/sp-ecc:code-review` - Quick check
-5. `superpowers:finishing-a-development-branch` - Extract patterns
+2. `sp-ecc:subagent-driven-development` - Execute plan with full review pipeline
+3. `sp-ecc:finishing-a-development-branch` - Extract patterns
 
-**Or fully autonomous:**
-1. `planner` agent - Let AI plan
-2. Implement with `tdd-guide` agent support
-3. `code-reviewer` agent - Automated review
+**Or lightweight (skip pipeline):**
+1. `/sp-ecc:plan` - Quick planning
+2. Implement manually with `tdd-guide` agent support
+3. `/sp-ecc:code-review` - Quick check
 4. `/sp-ecc:learn` - Manual pattern extraction
 
 **Benefits:**
@@ -326,17 +323,17 @@ Need to coordinate multiple operations?
 
 **For complex features:**
 - Use Layer 1 for planning and design (captures ADRs for team)
-- Use Layer 3 for implementation (faster iteration)
+- Use Layer 2 for implementation (faster iteration)
 - Use Layer 1 for finishing (extracts patterns for team)
 
 **For maintenance tasks:**
-- Use Layer 3 exclusively (quick fixes)
+- Use Layer 2 exclusively (quick fixes)
 - Use `/sp-ecc:learn` to share insights
 
 **For knowledge sharing:**
 - Use `/sp-ecc:instinct-export` to share patterns
 - Use `/sp-ecc:instinct-import` to load team patterns
-- Use `superpowers:finishing-a-development-branch` to ensure patterns are captured
+- Use `sp-ecc:finishing-a-development-branch` to ensure patterns are captured
 
 **Benefits:**
 - Team alignment through ADRs
@@ -348,27 +345,57 @@ Need to coordinate multiple operations?
 
 ## Common Scenarios and Recommendations
 
+### Scenario: Brainstorm Pipeline (End-to-End)
+
+**Full flow from idea to finished branch:**
+```
+1. sp-ecc:brainstorming
+   - Understand project context (files, docs, commits)
+   - One question at a time to refine the idea
+   - Explore 2-3 approaches with trade-offs
+   - Present design in sections, validate each
+   - Save design doc to docs/plans/YYYY-MM-DD-<topic>-design.md
+
+2. User chooses from 4 options:
+   - Ready — proceed to implementation
+   - Revise — continue brainstorming
+   - Save & exit — keep design doc, return later
+   - Discard & start fresh — drop design, restart
+
+3. If Ready:
+   - Choose workspace (isolated worktree or new branch)
+   - sp-ecc:writing-plans creates detailed implementation plan
+
+4. sp-ecc:subagent-driven-development executes the plan:
+   - Fresh subagent per task (TDD enforced)
+   - Per-task review: spec → quality → security → conditional gates
+   - After all tasks: e2e → docs → verification loop → final review → cleanup
+
+5. sp-ecc:finishing-a-development-branch
+   - Verify tests, summarize work, present merge/PR options
+```
+
 ### Scenario: Starting a New Feature
 
-**Beginner:**
+**Beginner (full pipeline):**
 ```
-1. superpowers:brainstorming
-   - Explore requirements and edge cases
-2. superpowers:writing-plans
+1. sp-ecc:brainstorming
+   - Explore requirements, design collaboratively
+   - Choose "Ready" when design is complete
+2. sp-ecc:writing-plans
    - Create ADR and implementation plan
-3. superpowers:test-driven-development
-   - Implement with TDD workflow
+3. sp-ecc:subagent-driven-development
+   - Execute plan with subagent per task + multi-stage review
 ```
 
 **Expert:**
 ```
 1. /sp-ecc:plan
    - Generate quick implementation plan
-2. /sp-ecc:test-coverage (optional)
-   - Check existing test baseline
-3. Implement manually with tdd-guide agent support
-4. /sp-ecc:code-review
-   - Quick self-review
+2. sp-ecc:subagent-driven-development
+   - Execute plan (or implement manually with tdd-guide agent)
+3. /sp-ecc:code-review
+   - Quick self-review (if not using subagent pipeline)
 ```
 
 ### Scenario: Bug Fix
@@ -384,11 +411,11 @@ Need to coordinate multiple operations?
 
 **Complex bug:**
 ```
-1. superpowers:systematic-debugging
+1. sp-ecc:systematic-debugging
    - Guided diagnostic workflow
-2. superpowers:test-driven-development
+2. sp-ecc:test-driven-development
    - Fix with test coverage
-3. superpowers:requesting-code-review
+3. sp-ecc:requesting-code-review
    - Full review process
 ```
 
@@ -396,8 +423,8 @@ Need to coordinate multiple operations?
 
 **Before commit:**
 ```
-# Automatic via superpowers:requesting-code-review
-1. superpowers:requesting-code-review
+# Automatic via sp-ecc:requesting-code-review
+1. sp-ecc:requesting-code-review
    - Automatically invokes security-reviewer agent
 ```
 
@@ -412,15 +439,15 @@ Need to coordinate multiple operations?
 
 **Approach:**
 ```
-1. superpowers:brainstorming
+1. sp-ecc:brainstorming
    - Identify optimization opportunities
-2. superpowers:writing-plans
+2. sp-ecc:writing-plans
    - Plan optimization strategy with ADR
-3. superpowers:test-driven-development
+3. sp-ecc:test-driven-development
    - Implement with performance tests
 4. /sp-ecc:test-coverage
    - Verify no regression
-5. superpowers:finishing-a-development-branch
+5. sp-ecc:finishing-a-development-branch
    - Extract performance patterns
 ```
 
@@ -435,9 +462,9 @@ Need to coordinate multiple operations?
 
 **Major documentation:**
 ```
-1. superpowers:brainstorming
+1. sp-ecc:brainstorming
    - Plan documentation structure
-2. superpowers:writing-plans
+2. sp-ecc:writing-plans
    - Create documentation plan
 3. Manual implementation
 4. /sp-ecc:update-docs
@@ -448,7 +475,7 @@ Need to coordinate multiple operations?
 
 **After every branch:**
 ```
-1. superpowers:finishing-a-development-branch
+1. sp-ecc:finishing-a-development-branch
    - Automatically extracts patterns
    - Updates instinct library
 ```
@@ -470,12 +497,12 @@ Need to coordinate multiple operations?
 ### 1. Start Systematic, Then Accelerate
 
 - Use Layer 1 (workflows) when learning
-- Graduate to Layer 3 (quick tools) when proficient
+- Graduate to Layer 2 (quick tools) when proficient
 - Always use Layer 1 for finishing branches (pattern extraction)
 
 ### 2. Let Auto-Enhancements Work for You
 
-- Don't manually invoke `code-reviewer` agent if using `superpowers:requesting-code-review`
+- Don't manually invoke `code-reviewer` agent if using `sp-ecc:requesting-code-review`
 - Let workflows handle the orchestration
 - Trust the automatic pattern extraction
 
@@ -488,22 +515,22 @@ Quick tools are designed to work together:
 
 ### 4. Use Behavior Modes Strategically
 
-- `superpowers:pairing-mode` - When you want conversational guidance
-- `superpowers:focused-mode` - When you want minimal interruption
-- `superpowers:learning-mode` - When you want maximum explanation
+- `sp-ecc:pairing-mode` - When you want conversational guidance
+- `sp-ecc:focused-mode` - When you want minimal interruption
+- `sp-ecc:learning-mode` - When you want maximum explanation
 
 ### 5. Capture Knowledge Continuously
 
 - Use `/sp-ecc:learn` whenever you solve something non-obvious
-- Use `superpowers:finishing-a-development-branch` to capture comprehensive patterns
+- Use `sp-ecc:finishing-a-development-branch` to capture comprehensive patterns
 - Use `/sp-ecc:instinct-export` to share with team regularly
 
 ### 6. Match Tool to Task Complexity
 
 | Task Complexity | Recommended Layer |
 |-----------------|-------------------|
-| Simple fix | Layer 3 (Quick tool) |
-| Medium feature | Layer 3 + Layer 2 (Quick + Auto) |
+| Simple fix | Layer 2 (Quick tool) |
+| Medium feature | Layer 1 + Layer 2 (Workflow + Tools) |
 | Complex feature | Layer 1 (Systematic workflow) |
 | Learning phase | Layer 1 (Systematic workflow) |
 | Teaching others | Layer 1 (Systematic workflow) |
@@ -516,11 +543,13 @@ Quick tools are designed to work together:
 
 | Task | Beginner | Expert |
 |------|----------|--------|
-| Plan feature | `superpowers:writing-plans` | `/sp-ecc:plan` |
-| Implement with tests | `superpowers:test-driven-development` | `/sp-ecc:test-coverage` |
-| Code review | `superpowers:requesting-code-review` | `/sp-ecc:code-review` |
-| Fix build | `superpowers:systematic-debugging` | `/sp-ecc:build-fix` |
-| Finish branch | `superpowers:finishing-a-development-branch` | `superpowers:finishing-a-development-branch` |
+| Ideate + design | `sp-ecc:brainstorming` | `sp-ecc:brainstorming` |
+| Plan feature | `sp-ecc:writing-plans` | `/sp-ecc:plan` |
+| Execute plan | `sp-ecc:subagent-driven-development` | `sp-ecc:subagent-driven-development` |
+| Full pipeline | `sp-ecc:brainstorming` → Ready → plan → execute | Same |
+| Code review | `sp-ecc:requesting-code-review` | `/sp-ecc:code-review` |
+| Fix build | `sp-ecc:systematic-debugging` | `/sp-ecc:build-fix` |
+| Finish branch | `sp-ecc:finishing-a-development-branch` | `sp-ecc:finishing-a-development-branch` |
 | Learn patterns | Auto via finishing | `/sp-ecc:learn` |
 | Check patterns | `/sp-ecc:instinct-status` | `/sp-ecc:instinct-status` |
 
@@ -529,14 +558,14 @@ Quick tools are designed to work together:
 **Ask yourself:**
 
 1. **Do I need guidance?** → Use Layer 1 (Systematic Workflow)
-2. **Do I know exactly what I need?** → Use Layer 3 (Quick Tool)
-3. **Do I want AI to handle it?** → Use Layer 3 (Agent)
+2. **Do I know exactly what I need?** → Use Layer 2 (Quick Tool)
+3. **Do I want AI to handle it?** → Use Layer 2 (Agent)
 4. **Is this complex and important?** → Use Layer 1 (Systematic Workflow)
-5. **Am I finishing work?** → Use `superpowers:finishing-a-development-branch`
+5. **Am I finishing work?** → Use `sp-ecc:finishing-a-development-branch`
 
 **Default recommendation:**
 - When learning: Always start with Layer 1
-- When proficient: Use Layer 3 for speed, Layer 1 for finishing
+- When proficient: Use Layer 2 for speed, Layer 1 for finishing
 - When teaching: Always use Layer 1
 - When in doubt: Use Layer 1
 
@@ -544,15 +573,14 @@ Quick tools are designed to work together:
 
 ## Summary
 
-Superpower-ECC gives you three ways to work:
+Superpower-ECC gives you two ways to work:
 
 1. **Systematic workflows** (Layer 1) - Guided, educational, comprehensive
-2. **Auto-enhancements** (Layer 2) - Transparent, integrated, automatic
-3. **Quick tools** (Layer 3) - Direct, fast, composable
+2. **Quick tools** (Layer 2) - Direct, focused, fast
 
 **The integration means:**
 - You never lose systematic rigor (Layer 2 enhances Layer 1)
-- You gain expert speed (Layer 3 available when needed)
+- You gain expert speed (Layer 2 available when needed)
 - You continuously learn (pattern extraction built-in)
 
 **Choose based on:**
@@ -563,8 +591,8 @@ Superpower-ECC gives you three ways to work:
 
 **Remember:**
 - Beginners should start with Layer 1
-- Experts can use Layer 3
-- Everyone should finish branches with `superpowers:finishing-a-development-branch`
+- Experts can use Layer 2
+- Everyone should finish branches with `sp-ecc:finishing-a-development-branch`
 - Pattern extraction is the key to continuous improvement
 
 ---

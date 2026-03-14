@@ -2,10 +2,10 @@
 
 ## Overview
 
-Superpower-ECC v1.0 is an integration project that combines:
-- [Superpowers v4.1.1](https://github.com/obra/superpowers) by Jesse Vincent
-- [Everything Claude Code v1.4.1](https://github.com/affaan-m/everything-claude-code) by Affaan Mustafa
-- Integration work by Faisal Alqarni
+sp-ecc is an integration project that combines:
+- [Superpowers](https://github.com/obra/superpowers) by Jesse Vincent
+- [Everything Claude Code](https://github.com/affaan-m/everything-claude-code) by Affaan Mustafa
+- Integration by Faisal Alqarni
 
 Repository: https://github.com/FaisalAlqarni/sp-ecc
 
@@ -18,7 +18,7 @@ This guide helps you migrate from either original project to this integrated ver
 - [ ] Read "Breaking Changes" section (only 2 minor changes)
 - [ ] Install Node.js 24.13.0+ for npm dependencies (optional, for linting)
 - [ ] Review new git policy (destructive git operations are blocked)
-- [ ] Explore new Layer 3 tools (/sp-ecc: commands and agents)
+- [ ] Explore new Layer 2 tools (/sp-ecc: commands and agents)
 - [ ] Try enhanced TDD workflow with coverage tracking
 - [ ] Check opt-out documentation if auto-features are too proactive
 - [ ] Update any custom skills/commands that interact with git
@@ -96,16 +96,16 @@ git checkout -- .   # Blocked (discards all working changes)
 **Impact**:
 - TDD workflow now suggests E2E tests after unit tests pass
 - finishing-a-development-branch extracts patterns automatically
-- Workflows invoke appropriate mode skills (research-mode, dev-mode, etc.)
+- Workflows use specialized subagent prompts for each phase
 
 **Migration**:
 - If too proactive: See docs/integration/OPT-OUT.md
 - All auto-features can be disabled
 - Defaults work well for most users
 
-## What's New in sp-ecc v1.0
+## What's New in sp-ecc
 
-### Layer 3: Quick Tools (New)
+### Layer 2: Quick Tools (New)
 
 **Commands** (`/sp-ecc:*`):
 ```bash
@@ -156,33 +156,16 @@ deployment-helper           # Deployment issues
 - Want fast resolution
 - Don't need full workflow
 
-### Layer 2: Enhancements (New)
-
-**Mode Skills** (invoked BY workflows):
-```
-superpowers-research-mode   # Deep codebase exploration
-superpowers-review-mode     # Critical code review
-superpowers-dev-mode        # Implementation focus
-```
-
-**Not User-Invocable**: These are invoked automatically by Layer 1 workflows when appropriate.
-
-**Pattern Extraction**:
-```
-superpowers:extract-patterns
-```
-
-**Auto-Invoked By**: `superpowers:finishing-a-development-branch`
-
-**What It Does**: Extracts learned patterns to instinct memory for future use.
-
-**Opt-Out**: See OPT-OUT.md if you don't want pattern extraction.
-
 ### Layer 1: Enhanced (Updated)
+
+**Pattern Extraction** (optional, integrated into finishing-a-development-branch):
+- `sp-ecc:extract-patterns` — extracts learned patterns to instinct memory
+- User is asked for permission before running
+- Opt-Out: See OPT-OUT.md
 
 **TDD Workflow Enhanced**:
 ```
-New in sp-ecc v1.0:
+New in sp-ecc:
   ├─> Coverage tracking (uses /sp-ecc:test-coverage)
   ├─> E2E test generation (uses /sp-ecc:e2e)
   └─> Same TDD cycle (Red-Green-Refactor)
@@ -247,9 +230,9 @@ cd ~/.claude/plugins/cache/claude-plugins-official/superpowers/4.2.0
 tar -czf ~/superpowers-4.2-backup.tar.gz .
 ```
 
-**Step 2: Install sp-ecc v1.0**
+**Step 2: Install sp-ecc**
 ```bash
-# Claude Code will automatically download sp-ecc v1.0
+# Claude Code will automatically download sp-ecc
 # when you invoke a Superpowers skill
 ```
 
@@ -262,7 +245,7 @@ npm install  # Requires Node.js 24.13.0+
 **Step 4: Test Existing Workflows**
 ```
 # Try your most-used workflow
-# Example: superpowers:test-driven-development
+# Example: sp-ecc:test-driven-development
 
 # Should work identically to v4.x
 # New features are additive
@@ -294,7 +277,7 @@ docs/integration/OPT-OUT.md
 
 **If You're Using Everything Claude Code**:
 
-sp-ecc v1.0 is a "best of both worlds" integration. You get:
+sp-ecc is a "best of both worlds" integration. You get:
 - ECC's quick tools (/sp-ecc:commands and agents)
 - Superpowers' systematic workflows
 - Both can be used independently
@@ -308,13 +291,12 @@ sp-ecc v1.0 is a "best of both worlds" integration. You get:
 
 **Migration**:
 ```
-ECC Usage -> sp-ecc v1.0 Equivalent
+ECC Usage -> sp-ecc Equivalent
 
 /build-fix -> /sp-ecc:build-fix
 /test-coverage -> /sp-ecc:test-coverage
 @agent-name -> Still works (agent-name or @agent-name)
-contexts/research -> superpowers-research-mode (invoked by brainstorming)
-continuous-learning-v2 -> superpowers:extract-patterns (auto-invoked)
+continuous-learning-v2 -> sp-ecc:extract-patterns (auto-invoked)
 
 Git operations -> Must do manually now (safety)
 ```
@@ -337,26 +319,26 @@ Git operations -> Must do manually now (safety)
 
 **Start Here**:
 1. Read `docs/integration/USAGE.md` - How to use three layers
-2. Try `superpowers:brainstorming` - Your first workflow
+2. Try `sp-ecc:brainstorming` - Your first workflow
 3. Read `docs/integration/ARCHITECTURE.md` - Understand the system
 
 **Learning Path**:
 ```
 Week 1: Layer 1 Workflows
-  └─> superpowers:brainstorming
-  └─> superpowers:writing-plans
-  └─> superpowers:executing-plans
-  └─> superpowers:test-driven-development
+  └─> sp-ecc:brainstorming
+  └─> sp-ecc:writing-plans
+  └─> sp-ecc:executing-plans
+  └─> sp-ecc:test-driven-development
 
-Week 2: Layer 3 Quick Tools
+Week 2: Layer 2 Quick Tools
   └─> /sp-ecc:build-fix
   └─> /sp-ecc:test-coverage
   └─> @build-error-resolver
 
 Week 3: Advanced Workflows
-  └─> superpowers:systematic-debugging
-  └─> superpowers:subagent-driven-development
-  └─> superpowers:finishing-a-development-branch
+  └─> sp-ecc:systematic-debugging
+  └─> sp-ecc:subagent-driven-development
+  └─> sp-ecc:finishing-a-development-branch
 
 Week 4: Language-Specific
   └─> Ruby/Rails: Read RUBY-RAILS.md
@@ -395,7 +377,7 @@ Week 4: Language-Specific
 
 **Symptoms**: After unit tests pass, AI suggests E2E tests.
 
-**Cause**: TDD workflow enhanced with E2E generation in sp-ecc v1.0.
+**Cause**: TDD workflow enhanced with E2E generation in sp-ecc.
 
 **Solution Option 1** (embrace it):
 ```
@@ -414,7 +396,7 @@ Comment out lines 225-244 (E2E Test Generation section)
 
 **Symptoms**: After finishing development, AI extracts patterns to instinct memory.
 
-**Cause**: `superpowers:finishing-a-development-branch` auto-invokes pattern extraction in sp-ecc v1.0.
+**Cause**: `sp-ecc:finishing-a-development-branch` auto-invokes pattern extraction in sp-ecc.
 
 **Solution Option 1** (embrace it):
 ```
@@ -424,24 +406,12 @@ Let it run -> Review extracted patterns -> Export with /sp-ecc:instinct-export
 **Solution Option 2** (opt-out):
 ```
 Edit: skills/finishing-a-development-branch/SKILL.md
-Remove superpowers:extract-patterns invocation
+Remove sp-ecc:extract-patterns invocation
 See OPT-OUT.md for exact lines
 ```
 
 **Why This Happens**: Pattern extraction learns from your work. Future sessions benefit from accumulated patterns.
 
-### Issue 4: Mode skills not user-invocable
-
-**Symptoms**: Try to invoke `superpowers-research-mode` directly, doesn't work.
-
-**Cause**: Mode skills are invoked BY Layer 1 workflows, not directly.
-
-**Solution**: Use the workflow that invokes the mode.
-```
-Want research mode? -> Use superpowers:brainstorming
-Want dev mode? -> Use superpowers:executing-plans
-Want review mode? -> Use superpowers:requesting-code-review
-```
 
 **Why This Works**: Modes are behavioral modifiers, not standalone workflows. They're contextual.
 
@@ -449,18 +419,18 @@ Want review mode? -> Use superpowers:requesting-code-review
 
 **Symptoms**: Looking for old workflow, can't find it.
 
-**Cause**: All v4.x workflows still exist in sp-ecc v1.0, naming unchanged.
+**Cause**: All v4.x workflows still exist in sp-ecc, naming unchanged.
 
 **Solution**: Same names, same invocations.
 ```
-superpowers:brainstorming           # Still exists
-superpowers:test-driven-development # Still exists
-superpowers:systematic-debugging    # Still exists
-superpowers:executing-plans         # Still exists
+sp-ecc:brainstorming           # Still exists
+sp-ecc:test-driven-development # Still exists
+sp-ecc:systematic-debugging    # Still exists
+sp-ecc:executing-plans         # Still exists
 # All v4.x workflows unchanged
 ```
 
-**Check**: If workflow seems different, verify you're not confusing with Layer 3 tools or mode skills.
+**Check**: If workflow seems different, verify you're not confusing with Layer 2 tools or mode skills.
 
 ### Issue 6: npm install fails
 
@@ -538,7 +508,7 @@ node --version
 
 **v5.x Features**: Will be maintained in v6.x+ (semantic versioning)
 **Layer Architecture**: Foundational design, will persist
-**Naming Conventions**: Stable (superpowers:, /sp-ecc:, agent-)
+**Naming Conventions**: Stable (sp-ecc:, /sp-ecc:, agent-)
 **Hooks System**: May expand, will remain compatible
 
 ### Platform Compatibility
@@ -554,7 +524,7 @@ node --version
 ### Token Usage
 
 **v4.2**: Baseline
-**sp-ecc v1.0**: ~25% more tokens initially
+**sp-ecc**: ~25% more tokens initially
 
 **Why More Tokens**:
 - More skills loaded (Ruby/Rails, Dart/Flutter)
@@ -569,7 +539,7 @@ node --version
 - Long-term: Pattern extraction reduces repeated explanations
 
 **Optimization**:
-- Use Layer 3 for quick tasks (lower token usage)
+- Use Layer 2 for quick tasks (lower token usage)
 - Opt-out of unused features
 - Pattern extraction pays off over time
 
@@ -584,7 +554,7 @@ node --version
 
 ## Rollback Procedure
 
-**If sp-ecc v1.0 Doesn't Work for You**:
+**If sp-ecc Doesn't Work for You**:
 
 **Step 1: Identify Issue**
 ```
@@ -601,7 +571,7 @@ node --version
 
 **Step 2: Rollback to v4.2** (if needed)
 ```bash
-# Remove sp-ecc v1.0 cache
+# Remove sp-ecc cache
 rm -rf ~/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.0
 
 # Restore v4.2 from backup (if you made one)
@@ -613,7 +583,7 @@ tar -xzf ~/superpowers-4.2-backup.tar.gz -C 4.2.0/
 
 **Step 3: Report Issue**
 ```
-# Help improve sp-ecc v1.0:
+# Help improve sp-ecc:
 # https://github.com/obra/superpowers/issues
 
 # Include:
@@ -629,15 +599,15 @@ tar -xzf ~/superpowers-4.2-backup.tar.gz -C 4.2.0/
 
 **Recommended**: Use systematic workflows for feature development.
 ```
-superpowers:brainstorming
-  └─> superpowers:writing-plans
-      └─> superpowers:executing-plans
-          └─> superpowers:finishing-a-development-branch
+sp-ecc:brainstorming
+  └─> sp-ecc:writing-plans
+      └─> sp-ecc:executing-plans
+          └─> sp-ecc:finishing-a-development-branch
 ```
 
 **Why**: Proven process, quality gates, comprehensive.
 
-**Layer 3 tools**: Use for quick fixes and focused tasks.
+**Layer 2 tools**: Use for quick fixes and focused tasks.
 
 ### 2. Normal Git Operations Work
 
@@ -653,10 +623,10 @@ Destructive operations (force push, hard reset, rebase) are blocked.
 
 **Workflow**:
 ```
-superpowers:using-git-worktrees
+sp-ecc:using-git-worktrees
   └─> Create isolated workspace
   └─> Develop feature
-  └─> superpowers:finishing-a-development-branch
+  └─> sp-ecc:finishing-a-development-branch
   └─> You merge manually
 ```
 
@@ -666,8 +636,8 @@ superpowers:using-git-worktrees
 
 **Let it Run**:
 ```
-superpowers:finishing-a-development-branch
-  └─> Auto-invokes superpowers:extract-patterns
+sp-ecc:finishing-a-development-branch
+  └─> Auto-invokes sp-ecc:extract-patterns
   └─> Extracts learned patterns
   └─> Stores in instinct memory
 ```
@@ -720,9 +690,9 @@ Example: "I have a bug" -> "Quick fix or investigation?"
 
 ## FAQ
 
-### Do I have to use Layer 3 tools?
+### Do I have to use Layer 2 tools?
 
-No. Layer 1 workflows work exactly as before. Layer 3 tools are optional shortcuts.
+No. Layer 1 workflows work exactly as before. Layer 2 tools are optional shortcuts.
 
 ### Can I disable destructive git blocker?
 
@@ -730,19 +700,19 @@ Yes, but not recommended. See OPT-OUT.md. The blocker only prevents destructive 
 
 ### Will v4.x workflows be maintained?
 
-Yes. Layer 1 workflows are foundational. sp-ecc v1.0 enhanced them, not replaced them.
+Yes. Layer 1 workflows are foundational. sp-ecc enhanced them, not replaced them.
 
-### Can I use ECC and Superpowers separately?
+### Can I use the layers separately?
 
-No. sp-ecc v1.0 is an integration. ECC features are now part of Superpowers as Layer 3.
+Yes. Layer 1 (workflows) and Layer 2 (quick tools) are independent. Use workflows for complex features, quick tools for focused tasks, or both together.
 
-### What if I only want quick tools (Layer 3)?
+### What if I only want quick tools (Layer 2)?
 
-You can use Layer 3 independently. Layer 1 workflows are optional (but recommended for complex tasks).
+You can use Layer 2 independently. Layer 1 workflows are optional (but recommended for complex tasks).
 
 ### How do I know which layer to use?
 
-Read USAGE.md decision trees. Generally: Layer 1 for features, Layer 3 for quick fixes.
+Read USAGE.md decision trees. Generally: Layer 1 for features, Layer 2 for quick fixes.
 
 ### Are mode skills necessary?
 
@@ -751,8 +721,7 @@ No. They're invoked automatically by workflows. You don't interact with them dir
 ### What's the learning curve?
 
 **Layer 1**: Same as v4.x (if you know v4.x, you know this)
-**Layer 2**: Automatic, no learning needed
-**Layer 3**: Quick reference, learn as you need
+**Layer 2**: Quick reference, learn as you need
 
 ### Can I contribute new skills/commands/agents?
 
@@ -762,7 +731,7 @@ Yes. See ARCHITECTURE.md "Extension Points" section. Follow patterns from existi
 
 Disable it (see OPT-OUT.md). Report issue on GitHub so we can fix it.
 
-### Is sp-ecc v1.0 stable for production?
+### Is sp-ecc stable for production?
 
 Yes. Extensively tested. Destructive git blocker makes it safer than v4.x for production.
 
@@ -775,13 +744,12 @@ Yes. Extensively tested. Destructive git blocker makes it safer than v4.x for pr
 
 ## Changelog Highlights
 
-**sp-ecc v1.0.0 (2026-02-06)**:
+**sp-ecc.0 (2026-02-06)**:
 
 **Added**:
 - 26 quick commands (/sp-ecc:*)
 - 13 specialist agents (agent-*)
-- 3 mode skills (superpowers-*-mode)
-- Pattern extraction (superpowers:extract-patterns)
+- Pattern extraction (sp-ecc:extract-patterns)
 - Ruby/Rails support (4 skills, Rails Engines focus)
 - Dart/Flutter support (4 skills, state management focus)
 - Hooks system (6 hook types, destructive git blocker, co-author stripping)

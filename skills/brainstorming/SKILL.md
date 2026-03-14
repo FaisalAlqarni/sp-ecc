@@ -36,13 +36,45 @@ Start by understanding the current project context, then ask questions one at a 
 
 **Documentation:**
 - Write the validated design to `docs/plans/YYYY-MM-DD-<topic>-design.md`
-- Use elements-of-style:writing-clearly-and-concisely skill if available
+- Use the bundled `./writing-clearly-and-concisely.md` skill to polish the design doc prose
 - Commit the design document to git
 
-**Implementation (if continuing):**
-- Ask: "Ready to set up for implementation?"
-- Use superpowers:using-git-worktrees to create isolated workspace
-- Use superpowers:writing-plans to create detailed implementation plan
+**Next steps — present exactly these 4 options:**
+
+```
+Design complete. What would you like to do?
+
+1. Ready — proceed to implementation
+2. Revise — continue brainstorming (new idea or change)
+3. Save & exit — keep design doc, come back later
+4. Discard & start fresh — drop design, new brainstorm
+
+Which option?
+```
+
+**If option 1 (Ready):**
+- Ask workspace preference:
+  ```
+  How would you like to set up the workspace?
+
+  1. Create an isolated worktree (recommended for larger features)
+  2. Work directly on a new branch
+  ```
+- If worktree: Use sp-ecc:using-git-worktrees to create isolated workspace
+- If direct branch: Create a new branch from current HEAD
+- Then use sp-ecc:writing-plans to create detailed implementation plan
+
+**If option 2 (Revise):**
+- Ask what the user wants to change or explore
+- Loop back to the appropriate phase (understanding, approaches, or design)
+
+**If option 3 (Save & exit):**
+- Confirm design doc is saved and committed
+- Report: "Design saved to `docs/plans/<filename>`. You can resume implementation later by running `/sp-ecc:write-plan` with this design doc."
+
+**If option 4 (Discard & start fresh):**
+- Confirm: "This will discard the current design. Are you sure?"
+- If confirmed: Start over from Phase 1
 
 ## Key Principles
 

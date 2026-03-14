@@ -29,12 +29,15 @@ Task tool (general-purpose):
     ## Your Job
 
     Once you're clear on requirements:
-    1. Implement exactly what the task specifies
-    2. Write tests (following TDD if task says to)
-    3. Verify implementation works
-    4. Commit your work
-    5. Self-review (see below)
-    6. Report back
+    1. **Write a failing test FIRST** — no production code without a red test (TDD is mandatory, not optional)
+    2. Run the test to confirm it fails for the right reason
+    3. Write the minimal production code to make the test pass
+    4. Run all tests to confirm green
+    5. Refactor if needed (keep tests green)
+    6. Repeat for each requirement
+    7. Commit your work
+    8. Self-review (see below)
+    9. Report back
 
     Work from: [directory]
 

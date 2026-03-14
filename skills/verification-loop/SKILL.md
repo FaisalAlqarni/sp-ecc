@@ -119,6 +119,25 @@ Set a mental checkpoint:
 Run: /verify
 ```
 
+## Retry Protocol (Pipeline Mode)
+
+When invoked from `sp-ecc:subagent-driven-development`, follow this retry protocol:
+
+```
+IF any phase fails:
+  1. Dispatch fix subagent with specific failure details
+  2. Fix subagent addresses ONLY the failures (no other changes)
+  3. Re-run the full verification loop
+  4. If fail again: repeat (max 3 attempts total)
+  5. After 3 failures: STOP and report to user:
+     "Verification failed 3 times. Remaining failures:
+      - [list each failure with phase and details]
+      Manual intervention needed."
+  6. Write failure details to pipeline-state.md
+```
+
+**Important:** Each retry re-runs ALL phases, not just the failed one. A fix for one phase may break another.
+
 ## Integration with Hooks
 
 This skill complements PostToolUse hooks but provides deeper verification.

@@ -34,11 +34,13 @@ This project merges the systematic workflows from Superpowers with the battle-te
 
 It starts from the moment you fire up your coding agent. As soon as it sees that you're building something, it *doesn't* just jump into trying to write code. Instead, it steps back and asks you what you're really trying to do.
 
-Once it's teased a spec out of the conversation, it shows it to you in chunks short enough to actually read and digest.
+Once it's teased a spec out of the conversation, it shows it to you in chunks short enough to actually read and digest. After the design is presented, you choose from four options: **Ready** (proceed to planning), **Revise** (refine the design), **Save & exit** (bookmark for later), or **Discard & start fresh**.
 
 After you've signed off on the design, your agent puts together an implementation plan that's clear enough for an enthusiastic junior engineer with poor taste, no judgement, no project context, and an aversion to testing to follow. It emphasizes true red/green TDD, YAGNI (You Aren't Gonna Need It), and DRY.
 
-Next up, once you say "go", it launches a *subagent-driven-development* process, having agents work through each engineering task, inspecting and reviewing their work, and continuing forward. It's not uncommon for Claude to be able to work autonomously for a couple hours at a time without deviating from the plan you put together.
+Next up, once you say "go", it launches a *subagent-driven-development* process, having agents work through each engineering task. Each task passes through a **multi-stage review pipeline** — spec compliance, code quality, and security checks, with a conditional gate before proceeding. After all tasks complete, **after-all-tasks stages** run automatically: E2E test generation, doc updates, a verification loop, final review, and refactor cleanup.
+
+It's not uncommon for Claude to be able to work autonomously for a couple hours at a time without deviating from the plan you put together. See `docs/integration/ARCHITECTURE.md` for the full pipeline details.
 
 **For Quick Tasks** (Layer 3 Tools):
 
@@ -112,7 +114,7 @@ ln -s /path/to/sp-ecc ~/.claude/plugins/sp-ecc
 ### Verify Installation
 
 Start a new Claude Code session and try:
-- Ask: "help me plan this feature" → Should trigger `superpowers:brainstorming`
+- Ask: "help me plan this feature" → Should trigger `sp-ecc:brainstorming`
 - Type: `/sp-ecc:test-coverage` → Should show the command
 - Use: `@build-error-resolver` → Should load the agent
 
@@ -144,7 +146,7 @@ For the individual source projects:
 
 3. **writing-plans** - Activates with approved design. Breaks work into bite-sized tasks (2-5 minutes each). Every task has exact file paths, complete code, verification steps.
 
-4. **subagent-driven-development** or **executing-plans** - Activates with plan. Dispatches fresh subagent per task with two-stage review (spec compliance, then code quality), or executes in batches with human checkpoints.
+4. **subagent-driven-development** or **executing-plans** - Activates with plan. Dispatches fresh subagent per task with multi-stage review pipeline (spec → quality → security → conditional gate), plus after-all-tasks stages (e2e, doc-updater, verification-loop, final review, refactor-cleaner). Or executes in batches with human checkpoints.
 
 5. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass. **Enhanced with coverage tracking and E2E generation.**
 
@@ -154,17 +156,7 @@ For the individual source projects:
 
 **The agent checks for relevant skills before any task.** Mandatory workflows, not suggestions.
 
-## Layer 2: Enhancements
-
-**Mode Skills** (invoked BY workflows):
-- **superpowers-research-mode** - Deep codebase exploration
-- **superpowers-review-mode** - Critical code review focus
-- **superpowers-dev-mode** - Implementation mindset
-
-**Pattern Extraction:**
-- **superpowers:extract-patterns** - Auto-invoked by finishing workflow, learns from your work
-
-## Layer 3: Quick Tools
+## Layer 2: Quick Tools
 
 **Commands** (`/sp-ecc:*`):
 ```
@@ -201,31 +193,21 @@ code-reviewer               Code review
 - **verification-before-completion** - Ensure it's actually fixed
 
 **Collaboration**
-- **brainstorming** - Socratic design refinement with research mode
+- **brainstorming** - Socratic design refinement
 - **writing-plans** - Detailed implementation plans
 - **executing-plans** - Batch execution with checkpoints
-- **subagent-driven-development** - Fast iteration with two-stage review (spec compliance, then code quality)
+- **subagent-driven-development** - Fast iteration with multi-stage review pipeline and after-all-tasks stages
 - **dispatching-parallel-agents** - Concurrent subagent workflows
-- **requesting-code-review** - Pre-review checklist with review mode
+- **requesting-code-review** - Pre-review checklist
 - **receiving-code-review** - Responding to feedback
 - **using-git-worktrees** - Parallel development branches (you create, AI guides)
-- **finishing-a-development-branch** - Merge/PR decision workflow with pattern extraction
+- **finishing-a-development-branch** - Merge/PR decision workflow
 
 **Meta**
 - **writing-skills** - Create new skills following best practices
-- **using-superpowers** - Introduction to the skills system
+- **using-sp-ecc** - Introduction to the skills system
 
-### Layer 2: Enhancements
-
-**Mode Skills** (auto-invoked):
-- **superpowers-research-mode** - Deep exploration behavior
-- **superpowers-review-mode** - Critical review behavior
-- **superpowers-dev-mode** - Implementation behavior
-
-**Pattern Learning:**
-- **superpowers:extract-patterns** - Continuous learning from your work
-
-### Layer 3: Quick Tools
+### Layer 2: Quick Tools
 
 **26 Commands** (`/sp-ecc:*`): Build fixes, testing, code quality, development workflows
 

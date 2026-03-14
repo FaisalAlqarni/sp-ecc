@@ -1,5 +1,5 @@
 ---
-name: superpowers-extract-patterns
+name: extract-patterns
 description: Extract learned patterns from session - invoked automatically by finishing-a-development-branch or manually anytime
 ---
 

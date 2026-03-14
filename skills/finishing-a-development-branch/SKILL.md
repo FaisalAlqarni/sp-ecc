@@ -15,6 +15,26 @@ Guide completion of development work by presenting clear options and handling ch
 
 ## The Process
 
+### Step 0: Check Pipeline State (if applicable)
+
+If this branch was created via `sp-ecc:subagent-driven-development`:
+
+1. Read `docs/plans/*-pipeline-state.md` for this feature
+2. Check that all required stages are marked complete
+3. If any required stages are unchecked:
+
+```
+Cannot finish — pipeline stages incomplete:
+
+- [ ] <list unchecked required stages>
+
+Complete these stages before finishing.
+```
+
+Stop. Don't proceed to Step 1.
+
+If no pipeline-state file exists (non-pipeline usage), skip this step.
+
 ### Step 1: Verify Tests
 
 **Before presenting options, verify tests pass:**
@@ -45,6 +65,15 @@ Prepare a summary of what was implemented:
 - **Features added:** Bullet list of what's new
 - **Tests added/updated:** Count and brief description
 - **Verification status:** Test results, lint status, build status
+
+### Step 2.5: Extract Patterns (optional, ask user)
+
+Ask the user: "Would you like me to extract learned patterns from this session before finishing?"
+
+- If **yes**: Invoke `sp-ecc:extract-patterns` to save useful patterns to the instinct system
+- If **no**: Skip and continue to Step 3
+
+**Do not auto-invoke.** Always ask first.
 
 ### Step 3: Present Options
 
@@ -84,6 +113,8 @@ If in a worktree, clean up:
 git worktree remove <worktree-path>
 ```
 
+If pipeline-state file exists, delete it (pipeline complete).
+
 Report: what was merged, target branch, and cleanup status.
 
 #### Option 2: Push and Create PR
@@ -101,6 +132,8 @@ If in a worktree, clean up:
 # Remove the worktree (branch stays on remote)
 git worktree remove <worktree-path>
 ```
+
+If pipeline-state file exists, delete it (pipeline complete).
 
 Report: PR URL, branch name, and cleanup status.
 
@@ -135,6 +168,8 @@ git branch -D <feature-branch>
 # If in a worktree, remove it
 git worktree remove <worktree-path> --force
 ```
+
+If pipeline-state file exists, delete it (pipeline discarded).
 
 Report what was cleaned up.
 
@@ -178,7 +213,7 @@ Report what was cleaned up.
 ## Integration
 
 **Called by:**
-- **subagent-driven-development** (Step 7) - After all tasks complete
+- **subagent-driven-development** (Step 6: Finish) - After all tasks and reviews complete
 - **executing-plans** (Step 5) - After all batches complete
 
 **Works with:**

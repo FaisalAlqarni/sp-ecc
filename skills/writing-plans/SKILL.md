@@ -44,7 +44,7 @@ Wait for human confirmation before investing in plan detail. Misunderstandings c
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+> **For Claude:** REQUIRED SUB-SKILL: Use sp-ecc:executing-plans to implement this plan task-by-task.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -136,26 +136,16 @@ Before presenting the plan, check:
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice:
+After saving the plan, ask for approval:
 
 End every plan document with:
 
 ---
 **READY?** Proceed / Modify: [changes] / Different approach: [alternative]
 
-**"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
+**"Plan complete and saved to `docs/plans/<filename>.md`. Ready to execute?"**
 
-**1. Subagent-Driven (this session)** - I dispatch fresh subagent per task, review between tasks, fast iteration
-
-**2. Parallel Session (separate)** - Open new session with executing-plans, batch execution with checkpoints
-
-**Which approach?"**
-
-**If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
+**If approved:**
+- **REQUIRED SUB-SKILL:** Use sp-ecc:subagent-driven-development
 - Stay in this session
-- Fresh subagent per task + code review
-
-**If Parallel Session chosen:**
-- Guide them to open new session in worktree
-- **REQUIRED SUB-SKILL:** New session uses superpowers:executing-plans
+- Fresh subagent per task + multi-stage review (spec, quality, security, verification gate)

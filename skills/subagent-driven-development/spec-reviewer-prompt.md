@@ -14,6 +14,11 @@ Task tool (general-purpose):
 
     [FULL TEXT of task requirements]
 
+    ## Actual Code Changes
+    [PASTE GIT DIFF OR FILE CONTENTS HERE — MANDATORY]
+
+    If this section is empty, DO NOT PROCEED. Report: "Cannot review — no code provided."
+
     ## What Implementer Claims They Built
 
     [From implementer's report]
@@ -55,7 +60,15 @@ Task tool (general-purpose):
 
     **Verify by reading code, not by trusting report.**
 
+    ## TDD Verification (MANDATORY)
+    - [ ] Test file(s) exist for this task
+    - [ ] Tests cover the requirements (not just happy path)
+    - [ ] Test names describe behavior, not implementation
+
+    Note: You cannot verify test-first ORDER (that's honor system).
+    But you CAN verify tests EXIST and are MEANINGFUL. If no tests exist, FAIL the review.
+
     Report:
-    - ✅ Spec compliant (if everything matches after code inspection)
+    - ✅ Spec compliant (if everything matches after code inspection AND TDD verification passes)
     - ❌ Issues found: [list specifically what's missing or extra, with file:line references]
 ```

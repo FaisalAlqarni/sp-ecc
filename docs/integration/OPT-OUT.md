@@ -2,7 +2,7 @@
 
 ## Overview
 
-Superpower-ECC (an integration of Superpowers and Everything Claude Code) includes several features that are automatically invoked during workflows. This document explains what each feature does, why you might want to disable it, and exactly how to opt out.
+Superpower-ECC includes several features that are automatically invoked during workflows. This document explains what each feature does, why you might want to disable it, and exactly how to opt out.
 
 **Philosophy:** All auto-invocations are designed to help, but you're in control. If a feature doesn't fit your workflow, turn it off.
 
@@ -33,7 +33,7 @@ If no: Continue with unit tests only
 
 ### How to Disable
 
-**File to edit:** `D:\Projects\superpowers\skills\test-driven-development\SKILL.md`
+**File to edit:** `D:\Projects\superpower-ecc\skills\test-driven-development\SKILL.md`
 
 **Find this section (lines 225-244):**
 ```markdown
@@ -99,7 +99,7 @@ When using `finishing-a-development-branch`, Claude automatically invokes a docu
 
 ### How to Disable
 
-**File to edit:** `D:\Projects\superpowers\skills\finishing-a-development-branch\SKILL.md`
+**File to edit:** `D:\Projects\superpower-ecc\skills\finishing-a-development-branch\SKILL.md`
 
 **Current workflow (conceptual - not currently in file):**
 
@@ -139,7 +139,7 @@ After disabling, `finishing-a-development-branch` will skip documentation sync a
 
 ### What It Does
 
-When completing work with `finishing-a-development-branch`, Claude automatically invokes `superpowers:extract-patterns` to learn from the session and save useful patterns.
+When completing work with `finishing-a-development-branch`, Claude automatically invokes `sp-ecc:extract-patterns` to learn from the session and save useful patterns.
 
 **Trigger:** Completing a development branch with the finishing workflow
 
@@ -160,7 +160,7 @@ When completing work with `finishing-a-development-branch`, Claude automatically
 
 ### How to Disable
 
-**File to edit:** `D:\Projects\superpowers\skills\finishing-a-development-branch\SKILL.md`
+**File to edit:** `D:\Projects\superpower-ecc\skills\finishing-a-development-branch\SKILL.md`
 
 **Current workflow (conceptual - not currently in file):**
 
@@ -170,7 +170,7 @@ If your version includes auto pattern extraction, look for:
 
 Learn from this session:
 ```
-/superpowers:extract-patterns
+/sp-ecc:extract-patterns
 ```
 
 Saves useful patterns for future sessions.
@@ -183,7 +183,7 @@ Saves useful patterns for future sessions.
 <!-- Pattern extraction disabled - invoke manually if needed
 Learn from this session:
 ```
-/superpowers:extract-patterns
+/sp-ecc:extract-patterns
 ```
 -->
 ```
@@ -199,7 +199,7 @@ You can still extract patterns manually anytime:
 
 Or invoke the skill directly:
 ```
-/superpowers:extract-patterns
+/sp-ecc:extract-patterns
 ```
 
 ### Verification
@@ -217,7 +217,7 @@ The `hooks/hooks.json` file defines automatic behaviors triggered by specific ev
 **SessionStart hooks:**
 - Load previous context on session start
 - Detect package manager
-- Initialize superpowers environment
+- Initialize sp-ecc environment
 
 **SessionEnd hooks:**
 - Persist session state
@@ -257,7 +257,7 @@ The `hooks/hooks.json` file defines automatic behaviors triggered by specific ev
 
 ### How to Disable Specific Hooks
 
-**File to edit:** `D:\Projects\superpowers\hooks\hooks.json`
+**File to edit:** `D:\Projects\superpower-ecc\hooks\hooks.json`
 
 #### Disable SessionEnd Pattern Evaluation
 
@@ -370,96 +370,6 @@ node -e "require('./hooks/hooks.json')"
 
 ---
 
-## 5. Mode Skills Auto-Invocation
-
-### What It Does
-
-Some workflow skills automatically invoke mode skills to change Claude's behavior for specific phases:
-
-**Mode skills:**
-- `research-mode`: Deep investigation and analysis
-- `review-mode`: Code review and feedback
-- `dev-mode`: Active development and implementation
-
-**Example workflow:**
-```
-subagent-driven-development:
-1. Plan tasks
-2. /research-mode (analyze requirements)
-3. Implement tasks
-4. /review-mode (verify implementation)
-5. Complete
-```
-
-### Why You Might Disable It
-
-- **Modes are distracting:** Prefer Claude to work consistently
-- **Mode switching adds overhead:** Want faster workflow execution
-- **Modes don't fit workflow:** Your process doesn't align with mode distinctions
-- **Manual control preferred:** Want to explicitly invoke modes when needed
-
-### How to Disable
-
-**Files to edit:** Individual workflow skill files that invoke modes
-
-**Example: Disable research-mode in subagent-driven-development**
-
-**File:** `D:\Projects\superpowers\skills\subagent-driven-development\SKILL.md`
-
-**Find mode invocation:**
-```markdown
-### Step 2: Research Phase
-
-Switch to research mode:
-```
-/research-mode
-```
-
-Analyze requirements and edge cases.
-```
-
-**Change to:**
-```markdown
-### Step 2: Research Phase (No Mode Switch)
-
-<!-- Research mode disabled - analyze inline
-```
-/research-mode
-```
--->
-
-Analyze requirements and edge cases without mode switch.
-```
-
-**Or:** Delete the mode invocation entirely and adjust the step description
-
-### Manual Alternative
-
-You can still invoke modes manually anytime:
-```
-/research-mode
-/review-mode
-/dev-mode
-```
-
-### Finding Mode Invocations
-
-**Search for mode skill invocations:**
-```bash
-grep -r "research-mode\|review-mode\|dev-mode" skills/
-```
-
-**Common locations:**
-- `skills/subagent-driven-development/SKILL.md`
-- `skills/executing-plans/SKILL.md`
-- Custom workflow skills
-
-### Verification
-
-After disabling, the workflow will skip mode switching and execute steps in the default mode.
-
----
-
 ## Quick Reference: Disabling All Auto-Invocations
 
 Want to disable everything? Here's the checklist:
@@ -507,7 +417,7 @@ To re-enable a disabled feature:
 
 ## Philosophy
 
-**You're in control.** Superpowers is designed to help, not dictate. If an auto-invocation doesn't fit your workflow, disable it. The system should adapt to you, not the other way around.
+**You're in control.** Superpower-ECC is designed to help, not dictate. If an auto-invocation doesn't fit your workflow, disable it. The system should adapt to you, not the other way around.
 
 **Start selective.** Don't disable everything at once. Try disabling one feature, work with it, and decide if it helps. You can always re-enable it later.
 
